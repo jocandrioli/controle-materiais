@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Materiais GPON</title>
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004499;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --border: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* ===== VIEW MANAGEMENT ===== */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* ===== HOME VIEW ===== */
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .menu-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .menu-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .menu-card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .menu-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .menu-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        .form-group.required label::after {
+            content: ' *';
+            color: var(--danger);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-small {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-block {
+            width: 100%;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== CART/ITEMS ===== */
+        .cart-section {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .cart-section h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .cart-item {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .cart-item-qty {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+
+        /* ===== TABLE ===== */
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        table thead {
+            background-color: var(--light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table tbody tr:hover {
+            background-color: rgba(0,102,204,0.02);
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #cc7700;
+        }
+
+        .badge-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        /* ===== INDICATORS ===== */
+        .stock-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .stock-indicator.green {
+            background-color: var(--success);
+        }
+
+        .stock-indicator.yellow {
+            background-color: var(--warning);
+        }
+
+        .stock-indicator.red {
+            background-color: var(--danger);
+        }
+
+        /* ===== ALERTS ===== */
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-color: var(--success);
+            color: #155724;
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-color: var(--warning);
+            color: #856404;
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: var(--danger);
+            color: #721c24;
+        }
+
+        .alert-info {
+            background-color: rgba(0, 102, 204, 0.1);
+            border-color: var(--primary);
+            color: #004085;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        /* ===== KANBAN ===== */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kanban-column {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 400px;
+        }
+
+        .kanban-header {
+            font-weight: 600;
+            padding: 0.5rem 0;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--primary);
+        }
+
+        .kanban-count {
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: 0.5rem;
+        }
+
+        .kanban-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .kanban-card h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .kanban-card-info {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .kanban-card-actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 1.2rem;
+            }
+
+            .home-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-block {
+                width: 100%;
+            }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            .header, .btn, .logout-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <h1>📦 Controle de Materiais GPON</h1>
+        <div class="header-user">
+            <div class="user-name">
+                👤 <span id="username">Técnico</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- HOME VIEW -->
+        <div id="home" class="view active">
+            <div style="margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin-bottom: 1rem;">📋 Menu Principal</h2>
+            </div>
+
+            <div class="home-grid">
+                <!-- Card 1: Retirar no Central -->
+                <div class="menu-card" onclick="goToView('retirada')">
+                    <div class="menu-card-icon">🏢</div>
+                    <h3>Retirar no Central</h3>
+                    <p>Retire materiais do estoque central para seu carro</p>
+                </div>
+
+                <!-- Card 2: Baixar em Evento -->
+                <div class="menu-card" onclick="goToView('consumo')">
+                    <div class="menu-card-icon">📞</div>
+                    <h3>Baixar em Evento</h3>
+                    <p>Registre consumo de materiais em eventos (SIGMA/FSP)</p>
+                </div>
+
+                <!-- Card 3: Meu Estoque -->
+                <div class="menu-card" onclick="goToView('meuEstoque')">
+                    <div class="menu-card-icon">🚗</div>
+                    <h3>Meu Estoque</h3>
+                    <p>Visualize o saldo de materiais no seu carro</p>
+                </div>
+
+                <!-- Card 4: Reposições -->
+                <div class="menu-card" onclick="goToView('reposicoes')">
+                    <div class="menu-card-icon">📊</div>
+                    <h3>Reposições (Kanban)</h3>
+                    <p>Gerencie reposições e reabastecimentos</p>
+                </div>
+            </div>
+
+            <div style="background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">📊 Resumo de Estoque</h3>
+                <div id="resumoEstoque">
+                    <p style="color: #666;">Carregando dados...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RETIRADA VIEW -->
+        <div id="retirada" class="view">
+            <button class="btn btn-secondary" onclick="goToView('home')" style="margin-bottom: 1.5rem;">← Voltar</button>
+
+            <div style="background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🏢 Retirar no Estoque Central</h2>
+
+                <div class="form-group required">
+                    <label>Seu Nome (Técnico)</label>
+                    <select id="tecnicoRetirada">
+                        <option value="">-- Selecione --</option>
+                        <option value="João Silva">João Silva</option>
+                        <option value="Matheus Costa">Matheus Costa</option>
+                        <option value="Pedro Santos">Pedro Santos</option>
+                    </select>
+                </div>
+
+                <div class="form-group required">
+                    <label>Material a Retirar</label>
+                    <select id="materialRetirada">
+                        <option value="">-- Selecione --</option>
+                        <option value="Splitter 1:8">Splitter 1:8</option>
+                        <option value="CTO 16 portas">CTO 16 portas</option>
+                        <option value="Conector SC/APC">Conector SC/APC</option>
+                        <option value="Cabo Óptico 1km">Cabo Óptico 1km</option>
+                        <option value="Emenda Fusão">Emenda Fusão</option>
+                    </select>
+                </div>
+
+                <div class="form-group required">
+                    <label>Quantidade</label>
+                    <input type="number" id="quantidadeRetirada" min="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Observação</label>
+                    <textarea id="obsRetirada" rows="2" placeholder="Opcional"></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-block" onclick="adicionarItemRetirada()">+ Adicionar à Retirada</button>
+            </div>
+
+            <div class="cart-section">
+                <h3>🛒 Itens a Retirar</h3>
+                <div id="cartRetirada">
+                    <div class="empty-cart">Nenhum item adicionado</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-success btn-block" onclick="confirmarRetirada()">✓ Confirmar Retirada</button>
+                <button class="btn btn-secondary btn-block" onclick="limparCarrinho('retirada')">🗑️ Limpar</button>
+            </div>
+        </div>
+
+        <!-- CONSUMO VIEW -->
+        <div id="consumo" class="view">
+            <button class="btn btn-secondary" onclick="goToView('home')" style="margin-bottom: 1.5rem;">← Voltar</button>
+
+            <div style="background: white; border-radius: 8px; padding: 2rem; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📞 Baixar em Evento</h2>
+
+                <div id="alertValidacao"></div>
+
+                <div class="form-group required">
+                    <label>ID do Evento (SIGMA/FSP)</label>
+                    <input type="text" id="eventoID" placeholder="Ex: 12345678" maxlength="20">
+                    <small style="color: #666; margin-top: 0.3rem; display: block;">Cole o ID do evento do seu SIGMA/FSP</small>
+                </div>
+
+                <button class="btn btn-primary btn-block" onclick="validarEvento()">🔍 Validar Evento</button>
+
+                <div id="eventoDados" style="display: none; background: var(--light); border: 1px solid var(--border); border-radius: 4px; padding: 1rem; margin: 1rem 0;">
+                    <h4>Dados do Evento:</h4>
+                    <p><strong>ID:</strong> <span id="eventoDadosID"></span></p>
+                    <p><strong>Cluster:</strong> <span id="eventoDadosCluster"></span></p>
+                    <p><strong>Status:</strong> <span id="eventoDadosStatus"></span></p>
+                </div>
+
+                <div class="form-group required">
+                    <label>Material Consumido</label>
+                    <select id="materialConsumo">
+                        <option value="">-- Selecione --</option>
+                        <option value="Splitter 1:8">Splitter 1:8</option>
+                        <option value="CTO 16 portas">CTO 16 portas</option>
+                        <option value="Conector SC/APC">Conector SC/APC</option>
+                        <option value="Cabo Óptico 1km">Cabo Óptico 1km</option>
+                        <option value="Emenda Fusão">Emenda Fusão</option>
+                    </select>
+                </div>
+
+                <div class="form-group required">
+                    <label>Quantidade Consumida</label>
+                    <input type="number" id="quantidadeConsumo" min="1" value="1">
+                </div>
+
+                <div class="form-group">
+                    <label>Observação</label>
+                    <textarea id="obsConsumo" rows="2" placeholder="Opcional"></textarea>
+                </div>
+
+                <button class="btn btn-primary btn-block" onclick="adicionarItemConsumo()">+ Adicionar ao Consumo</button>
+            </div>
+
+            <div class="cart-section">
+                <h3>🛒 Itens a Consumir</h3>
+                <div id="cartConsumo">
+                    <div class="empty-cart">Nenhum item adicionado</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-success btn-block" onclick="confirmarConsumo()">✓ Confirmar Consumo</button>
+                <button class="btn btn-secondary btn-block" onclick="limparCarrinho('consumo')">🗑️ Limpar</button>
+            </div>
+        </div>
+
+        <!-- MEU ESTOQUE VIEW -->
+        <div id="meuEstoque" class="view">
+            <button class="btn btn-secondary" onclick="goToView('home')" style="margin-bottom: 1.5rem;">← Voltar</button>
+
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">🚗 Meu Estoque (Carro)</h2>
+
+            <div class="form-group">
+                <label>Seu Nome</label>
+                <select id="tecnicoEstoque" onchange="carregarMeuEstoque()">
+                    <option value="">-- Selecione --</option>
+                    <option value="João Silva">João Silva</option>
+                    <option value="Matheus Costa">Matheus Costa</option>
+                    <option value="Pedro Santos">Pedro Santos</option>
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Material</th>
+                            <th>Saldo</th>
+                            <th>Mínimo</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaMeuEstoque">
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: #999;">
+                                Selecione um técnico acima
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- REPOSIÇÕES VIEW -->
+        <div id="reposicoes" class="view">
+            <button class="btn btn-secondary" onclick="goToView('home')" style="margin-bottom: 1.5rem;">← Voltar</button>
+
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">📊 Reposições (Kanban)</h2>
+
+            <div class="kanban-board">
+                <div class="kanban-column">
+                    <div class="kanban-header">🔴 Novo <span class="kanban-count" id="countNovo">0</span></div>
+                    <div id="kanbanNovo"></div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">🟡 Separado <span class="kanban-count" id="countSeparado">0</span></div>
+                    <div id="kanbanSeparado"></div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">🟠 Retirado <span class="kanban-count" id="countRetirado">0</span></div>
+                    <div id="kanbanRetirado"></div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">✅ Concluído <span class="kanban-count" id="countConcluido">0</span></div>
+                    <div id="kanbanConcluido"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header" id="confirmTitle">Confirmar?</div>
+            <div class="modal-body" id="confirmMessage"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-primary" id="confirmBtn" onclick="">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DADOS MOCK (Simulação) =====
+        const materiaisDB = [
+            { id: 1, nome: 'Splitter 1:8', categoria: 'Splitter', unidade: 'un' },
+            { id: 2, nome: 'CTO 16 portas', categoria: 'CTOs', unidade: 'un' },
+            { id: 3, nome: 'Conector SC/APC', categoria: 'Conectores', unidade: 'pç' },
+            { id: 4, nome: 'Cabo Óptico 1km', categoria: 'Cabos', unidade: 'm' },
+            { id: 5, nome: 'Emenda Fusão', categoria: 'Emendas', unidade: 'un' }
+        ];
+
+        const estoqueMockDB = {
+            'ESTOQUE CENTRAL': {
+                'Splitter 1:8': { saldo: 45, minimo: 10 },
+                'CTO 16 portas': { saldo: 28, minimo: 5 },
+                'Conector SC/APC': { saldo: 150, minimo: 30 },
+                'Cabo Óptico 1km': { saldo: 8, minimo: 15 },
+                'Emenda Fusão': { saldo: 3, minimo: 10 }
+            },
+            'CARRO – João Silva': {
+                'Splitter 1:8': { saldo: 5, minimo: 2 },
+                'CTO 16 portas': { saldo: 2, minimo: 1 },
+                'Conector SC/APC': { saldo: 20, minimo: 5 },
+                'Cabo Óptico 1km': { saldo: 0, minimo: 2 },
+                'Emenda Fusão': { saldo: 1, minimo: 2 }
+            },
+            'CARRO – Matheus Costa': {
+                'Splitter 1:8': { saldo: 3, minimo: 2 },
+                'CTO 16 portas': { saldo: 1, minimo: 1 },
+                'Conector SC/APC': { saldo: 15, minimo: 5 },
+                'Cabo Óptico 1km': { saldo: 2, minimo: 2 },
+                'Emenda Fusão': { saldo: 0, minimo: 2 }
+            },
+            'CARRO – Pedro Santos': {
+                'Splitter 1:8': { saldo: 4, minimo: 2 },
+                'CTO 16 portas': { saldo: 3, minimo: 1 },
+                'Conector SC/APC': { saldo: 25, minimo: 5 },
+                'Cabo Óptico 1km': { saldo: 1, minimo: 2 },
+                'Emenda Fusão': { saldo: 2, minimo: 2 }
+            }
+        };
+
+        const reposicoesDB = [
+            { id: 1, material: 'Cabo Óptico 1km', local: 'CARRO – João Silva', saldo: 0, minimo: 2, qtdSugerida: 2, status: 'Novo', tecnico: 'João Silva' },
+            { id: 2, material: 'Emenda Fusão', local: 'CARRO – João Silva', saldo: 1, minimo: 2, qtdSugerida: 1, status: 'Separado', tecnico: 'João Silva' },
+            { id: 3, material: 'Emenda Fusão', local: 'CARRO – Matheus Costa', saldo: 0, minimo: 2, qtdSugerida: 2, status: 'Novo', tecnico: 'Matheus Costa' },
+            { id: 4, material: 'Cabo Óptico 1km', local: 'ESTOQUE CENTRAL', saldo: 8, minimo: 15, qtdSugerida: 7, status: 'Novo', tecnico: '' }
+        ];
+
+        const movimentacoesHistorico = [
+            { id: 1, tipo: 'Retirada', material: 'Splitter 1:8', quantidade: 2, origem: 'ESTOQUE CENTRAL', destino: 'CARRO – João Silva', tecnico: 'João Silva', data: '18/01/2026 10:30', evento: '' },
+            { id: 2, tipo: 'Consumo', material: 'Conector SC/APC', quantidade: 5, origem: 'CARRO – João Silva', destino: '', tecnico: 'João Silva', data: '18/01/2026 11:00', evento: '87654321' }
+        ];
+
+        let cartRetirada = [];
+        let cartConsumo = [];
+        let usuarioLogado = 'Técnico Demo';
+
+        // ===== NAVEGAÇÃO =====
+        function goToView(viewName) {
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewName).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // ===== LOGIN =====
+        function logout() {
+            alert('Você foi desconectado.');
+            usuarioLogado = 'Técnico Demo';
+            document.getElementById('username').textContent = usuarioLogado;
+            goToView('home');
+        }
+
+        // ===== RESUMO ESTOQUE NA HOME =====
+        function carregarResumoEstoque() {
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">';
+            
+            const statusCount = { verde: 0, amarelo: 0, vermelho: 0 };
+            for (let local in estoqueMockDB) {
+                for (let material in estoqueMockDB[local]) {
+                    const { saldo, minimo } = estoqueMockDB[local][material];
+                    if (saldo >= minimo) statusCount.verde++;
+                    else if (saldo >= minimo * 0.5) statusCount.amarelo++;
+                    else statusCount.vermelho++;
+                }
+            }
+
+            html += `
+                <div style="background: rgba(40, 167, 69, 0.1); border: 1px solid var(--success); border-radius: 8px; padding: 1rem;">
+                    <div style="font-weight: 600; color: var(--success);">✅ OK</div>
+                    <div style="font-size: 1.5rem; font-weight: 600;">${statusCount.verde}</div>
+                </div>
+                <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid var(--warning); border-radius: 8px; padding: 1rem;">
+                    <div style="font-weight: 600; color: #cc7700;">⚠️ Aviso</div>
+                    <div style="font-size: 1.5rem; font-weight: 600;">${statusCount.amarelo}</div>
+                </div>
+                <div style="background: rgba(220, 53, 69, 0.1); border: 1px solid var(--danger); border-radius: 8px; padding: 1rem;">
+                    <div style="font-weight: 600; color: var(--danger);">🔴 Crítico</div>
+                    <div style="font-size: 1.5rem; font-weight: 600;">${statusCount.vermelho}</div>
+                </div>
+            `;
+            
+            html += '</div>';
+            document.getElementById('resumoEstoque').innerHTML = html;
+        }
+
+        // ===== RETIRADA =====
+        function adicionarItemRetirada() {
+            const tecnico = document.getElementById('tecnicoRetirada').value;
+            const material = document.getElementById('materialRetirada').value;
+            const quantidade = parseInt(document.getElementById('quantidadeRetirada').value);
+            const obs = document.getElementById('obsRetirada').value;
+
+            if (!tecnico || !material || quantidade <= 0) {
+                alert('⚠️ Preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            const saldoCentral = estoqueMockDB['ESTOQUE CENTRAL'][material].saldo;
+            if (quantidade > saldoCentral) {
+                alert(`⚠️ Estoque insuficiente no Central! (Disponível: ${saldoCentral})`);
+                return;
+            }
+
+            cartRetirada.push({ tecnico, material, quantidade, obs });
+            atualizarCartRetirada();
+            document.getElementById('quantidadeRetirada').value = 1;
+            document.getElementById('obsRetirada').value = '';
+        }
+
+        function atualizarCartRetirada() {
+            const cart = document.getElementById('cartRetirada');
+            if (cartRetirada.length === 0) {
+                cart.innerHTML = '<div class="empty-cart">Nenhum item adicionado</div>';
+                return;
+            }
+
+            let html = '';
+            cartRetirada.forEach((item, idx) => {
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.material}</div>
+                            <div class="cart-item-qty">Quantidade: ${item.quantidade} un</div>
+                            ${item.obs ? `<div class="cart-item-qty">Obs: ${item.obs}</div>` : ''}
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="btn btn-danger btn-small" onclick="removerItemRetirada(${idx})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            cart.innerHTML = html;
+        }
+
+        function removerItemRetirada(idx) {
+            cartRetirada.splice(idx, 1);
+            atualizarCartRetirada();
+        }
+
+        function confirmarRetirada() {
+            if (cartRetirada.length === 0) {
+                alert('⚠️ Adicione itens à retirada!');
+                return;
+            }
+
+            let resumo = '✓ Retirada Confirmada:\n\n';
+            cartRetirada.forEach(item => {
+                resumo += `${item.material}: ${item.quantidade} un\n`;
+                estoqueMockDB['ESTOQUE CENTRAL'][item.material].saldo -= item.quantidade;
+                const carroTecnico = `CARRO – ${item.tecnico}`;
+                estoqueMockDB[carroTecnico][item.material].saldo += item.quantidade;
+
+                movimentacoesHistorico.push({
+                    id: movimentacoesHistorico.length + 1,
+                    tipo: 'Retirada',
+                    material: item.material,
+                    quantidade: item.quantidade,
+                    origem: 'ESTOQUE CENTRAL',
+                    destino: carroTecnico,
+                    tecnico: item.tecnico,
+                    data: new Date().toLocaleString('pt-BR'),
+                    evento: ''
+                });
+            });
+
+            alert(resumo);
+            cartRetirada = [];
+            atualizarCartRetirada();
+            carregarResumoEstoque();
+            goToView('home');
+        }
+
+        function limparCarrinho(tipo) {
+            if (tipo === 'retirada') cartRetirada = [];
+            else cartConsumo = [];
+            atualizarCartRetirada();
+            atualizarCartConsumo();
+        }
+
+        // ===== CONSUMO =====
+        function validarEvento() {
+            const eventoID = document.getElementById('eventoID').value.trim();
+            
+            if (!eventoID) {
+                document.getElementById('alertValidacao').innerHTML = '<div class="alert alert-danger">⚠️ Digite um ID de evento!</div>';
+                document.getElementById('eventoDados').style.display = 'none';
+                return;
+            }
+
+            // INTEGRAÇÃO COM SIGMA/FSP via Power Automate
+            // Para este demo, simulamos resposta
+            const eventosSimulados = {
+                '87654321': { id: '87654321', cluster: 'PORTO ALEGRE', status: 'Em progresso' },
+                '12345678': { id: '12345678', cluster: 'CANOAS', status: 'Aberto' },
+                '99999999': { id: '99999999', cluster: 'NOVO HAMBURGO', status: 'Concluído' }
+            };
+
+            if (eventosSimulados[eventoID]) {
+                const evento = eventosSimulados[eventoID];
+                document.getElementById('alertValidacao').innerHTML = '<div class="alert alert-success">✅ Evento validado com sucesso!</div>';
+                document.getElementById('eventoDadosID').textContent = evento.id;
+                document.getElementById('eventoDadosCluster').textContent = evento.cluster;
+                document.getElementById('eventoDadosStatus').textContent = evento.status;
+                document.getElementById('eventoDados').style.display = 'block';
+            } else {
+                document.getElementById('alertValidacao').innerHTML = '<div class="alert alert-danger">❌ Evento não encontrado. Verifique o ID.</div>';
+                document.getElementById('eventoDados').style.display = 'none';
+            }
+        }
+
+        function adicionarItemConsumo() {
+            const eventoID = document.getElementById('eventoID').value.trim();
+            const material = document.getElementById('materialConsumo').value;
+            const quantidade = parseInt(document.getElementById('quantidadeConsumo').value);
+            const obs = document.getElementById('obsConsumo').value;
+
+            if (!eventoID || !material || quantidade <= 0) {
+                alert('⚠️ Preencha todos os campos obrigatórios!');
+                return;
+            }
+
+            cartConsumo.push({ eventoID, material, quantidade, obs });
+            atualizarCartConsumo();
+            document.getElementById('quantidadeConsumo').value = 1;
+            document.getElementById('obsConsumo').value = '';
+        }
+
+        function atualizarCartConsumo() {
+            const cart = document.getElementById('cartConsumo');
+            if (cartConsumo.length === 0) {
+                cart.innerHTML = '<div class="empty-cart">Nenhum item adicionado</div>';
+                return;
+            }
+
+            let html = '';
+            cartConsumo.forEach((item, idx) => {
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.material}</div>
+                            <div class="cart-item-qty">Evento: ${item.eventoID}</div>
+                            <div class="cart-item-qty">Quantidade: ${item.quantidade}</div>
+                            ${item.obs ? `<div class="cart-item-qty">Obs: ${item.obs}</div>` : ''}
+                        </div>
+                        <div class="cart-item-actions">
+                            <button class="btn btn-danger btn-small" onclick="removerItemConsumo(${idx})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            cart.innerHTML = html;
+        }
+
+        function removerItemConsumo(idx) {
+            cartConsumo.splice(idx, 1);
+            atualizarCartConsumo();
+        }
+
+        function confirmarConsumo() {
+            if (cartConsumo.length === 0) {
+                alert('⚠️ Adicione itens ao consumo!');
+                return;
+            }
+
+            let resumo = '✓ Consumo Confirmado:\n\n';
+            cartConsumo.forEach(item => {
+                resumo += `${item.material}: ${item.quantidade} un (Evento: ${item.eventoID})\n`;
+                
+                // Buscar o carro do técnico logado (aqui simulamos João Silva)
+                const carroTecnico = 'CARRO – João Silva'; // Em produção, viria do usuário logado
+                const saldoCarro = estoqueMockDB[carroTecnico][item.material].saldo;
+                
+                if (item.quantidade > saldoCarro) {
+                    alert(`⚠️ Saldo insuficiente no carro! (Disponível: ${saldoCarro})`);
+                    return;
+                }
+
+                estoqueMockDB[carroTecnico][item.material].saldo -= item.quantidade;
+
+                movimentacoesHistorico.push({
+                    id: movimentacoesHistorico.length + 1,
+                    tipo: 'Consumo',
+                    material: item.material,
+                    quantidade: item.quantidade,
+                    origem: carroTecnico,
+                    destino: '',
+                    tecnico: 'João Silva',
+                    data: new Date().toLocaleString('pt-BR'),
+                    evento: item.eventoID
+                });
+            });
+
+            alert(resumo + '\n✅ Dados sincronizados com SIGMA/FSP!');
+            cartConsumo = [];
+            atualizarCartConsumo();
+            document.getElementById('eventoID').value = '';
+            document.getElementById('eventoDados').style.display = 'none';
+            document.getElementById('alertValidacao').innerHTML = '';
+            carregarResumoEstoque();
+            goToView('home');
+        }
+
+        // ===== MEU ESTOQUE =====
+        function carregarMeuEstoque() {
+            const tecnico = document.getElementById('tecnicoEstoque').value;
+            if (!tecnico) return;
+
+            const carroTecnico = `CARRO – ${tecnico}`;
+            const estoque = estoqueMockDB[carroTecnico];
+            const tbody = document.getElementById('tabelaMeuEstoque');
+            let html = '';
+
+            for (let material in estoque) {
+                const { saldo, minimo } = estoque[material];
+                let status = '';
+                let badge = '';
+
+                if (saldo >= minimo) {
+                    status = '✅ OK';
+                    badge = 'badge-success';
+                } else if (saldo >= minimo * 0.5) {
+                    status = '⚠️ Aviso';
+                    badge = 'badge-warning';
+                } else {
+                    status = '🔴 Crítico';
+                    badge = 'badge-danger';
+                }
+
+                html += `
+                    <tr>
+                        <td>${material}</td>
+                        <td><strong>${saldo}</strong></td>
+                        <td>${minimo}</td>
+                        <td><span class="badge ${badge}">${status}</span></td>
+                    </tr>
+                `;
+            }
+
+            tbody.innerHTML = html;
+        }
+
+        // ===== REPOSIÇÕES (KANBAN) =====
+        function carregarReposicoes() {
+            const statusCounts = { 'Novo': 0, 'Separado': 0, 'Retirado': 0, 'Concluído': 0 };
+            const kanbanDados = { 'Novo': '', 'Separado': '', 'Retirado': '', 'Concluído': '' };
+
+            reposicoesDB.forEach(rep => {
+                statusCounts[rep.status]++;
+                const card = `
+                    <div class="kanban-card">
+                        <h4>${rep.material}</h4>
+                        <div class="kanban-card-info">
+                            <div>📍 ${rep.local}</div>
+                            <div>Saldo: ${rep.saldo} | Mínimo: ${rep.minimo}</div>
+                            <div>Sugestão: ${rep.qtdSugerida}</div>
+                        </div>
+                        <div class="kanban-card-actions">
+                            ${rep.status === 'Novo' ? `<button class="btn btn-primary btn-small" onclick="mudarStatus(${rep.id}, 'Separado')">Separado</button>` : ''}
+                            ${rep.status === 'Separado' ? `<button class="btn btn-warning btn-small" onclick="mudarStatus(${rep.id}, 'Retirado')">Retirado</button>` : ''}
+                            ${rep.status === 'Retirado' ? `<button class="btn btn-success btn-small" onclick="mudarStatus(${rep.id}, 'Concluído')">✓ Concluído</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                kanbanDados[rep.status] += card;
+            });
+
+            document.getElementById('countNovo').textContent = statusCounts['Novo'];
+            document.getElementById('countSeparado').textContent = statusCounts['Separado'];
+            document.getElementById('countRetirado').textContent = statusCounts['Retirado'];
+            document.getElementById('countConcluido').textContent = statusCounts['Concluído'];
+
+            document.getElementById('kanbanNovo').innerHTML = kanbanDados['Novo'] || '<div class="empty-cart">Nenhum item</div>';
+            document.getElementById('kanbanSeparado').innerHTML = kanbanDados['Separado'] || '<div class="empty-cart">Nenhum item</div>';
+            document.getElementById('kanbanRetirado').innerHTML = kanbanDados['Retirado'] || '<div class="empty-cart">Nenhum item</div>';
+            document.getElementById('kanbanConcluido').innerHTML = kanbanDados['Concluído'] || '<div class="empty-cart">Nenhum item</div>';
+        }
+
+        function mudarStatus(repId, novoStatus) {
+            const rep = reposicoesDB.find(r => r.id === repId);
+            if (rep) {
+                rep.status = novoStatus;
+                carregarReposicoes();
+                alert(`✅ Reposição movida para "${novoStatus}"`);
+            }
+        }
+
+        // ===== MODAL =====
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // ===== INIT =====
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('username').textContent = usuarioLogado;
+            carregarResumoEstoque();
+            carregarReposicoes();
+        });
+    </script>
+</body>
+</html>

@@ -1,1323 +1,796 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Materiais GPON</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #0066cc;
-            --primary-dark: #0052a3;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --border: #dee2e6;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* ===== LOGIN ===== */
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .login-header h1 {
-            font-size: 24px;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-
-        .login-header p {
-            color: #6c757d;
-            font-size: 14px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 14px;
-        }
-
-        input[type="text"],
-        input[type="password"] {
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.3);
-        }
-
-        .alert {
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .alert.show {
-            display: block;
-        }
-
-        .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .test-users {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 20px;
-            border-left: 4px solid var(--info);
-        }
-
-        .test-users h3 {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .test-users p {
-            font-size: 13px;
-            color: #6c757d;
-            margin: 5px 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* ===== APLICAÇÃO PRINCIPAL ===== */
-        .app-container {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-            background: var(--light);
-        }
-
-        .app-container.show {
-            display: flex;
-        }
-
-        .navbar {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .navbar h2 {
-            color: var(--dark);
-            font-size: 20px;
-            margin: 0;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-info span {
-            color: #6c757d;
-            font-size: 14px;
-        }
-
-        .btn-logout {
-            background: var(--danger);
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #c82333;
-        }
-
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: white;
-            border-right: 1px solid var(--border);
-            padding: 20px 0;
-            overflow-y: auto;
-        }
-
-        .nav-item {
-            padding: 12px 20px;
-            cursor: pointer;
-            border-left: 3px solid transparent;
-            color: #6c757d;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .nav-item:hover {
-            background: var(--light);
-            color: var(--primary);
-        }
-
-        .nav-item.active {
-            background: var(--light);
-            color: var(--primary);
-            border-left-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .section h2 {
-            color: var(--dark);
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
-
-        .form-section {
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-row.full {
-            grid-template-columns: 1fr;
-        }
-
-        select {
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
-        }
-
-        .btn-register {
-            background: var(--success);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .btn-register:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        thead {
-            background: var(--light);
-            border-bottom: 2px solid var(--border);
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            color: var(--dark);
-            font-weight: 600;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-            color: #6c757d;
-        }
-
-        tbody tr:hover {
-            background: var(--light);
-        }
-
-        .btn-delete {
-            background: var(--danger);
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-
-        .btn-delete:hover {
-            background: #c82333;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid var(--primary);
-        }
-
-        .stat-card h3 {
-            color: #6c757d;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-card .number {
-            color: var(--dark);
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 40px;
-            color: #6c757d;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .main-content {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-                display: flex;
-                overflow-x: auto;
-            }
-
-            .nav-item {
-                white-space: nowrap;
-                padding: 12px 15px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerador de Carimbo - Acionamento GPON</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px; line-height: 1.6; }
+    .container { max-width: 1000px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); overflow: hidden; }
+    .header { background: #003366; color: #fff; padding: 20px; text-align: center; }
+    .header h1 { font-size: 24px; margin-bottom: 5px; }
+    .header p { font-size: 12px; opacity: .9; }
+    .form-group { margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group.full { grid-template-columns: 1fr; }
+    .form-group.three-col { grid-template-columns: 1fr 1fr 1fr; }
+    label { display: block; font-size: 12px; font-weight: 700; color: #333; margin-bottom: 4px; }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], input[type="time"], textarea, select {
+      width: 100%; padding: 8px; border: 1px solid #999; border-radius: 4px; font-size: 12px; font-family: Arial, sans-serif;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #ff6600; background: #fffef0; }
+    .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; }
+    .section-title { font-weight: 700; color: #003366; margin-bottom: 12px; font-size: 14px; border-bottom: 2px solid #ff6600; padding-bottom: 8px; }
+    .header-section { background: #f9f9f9; padding: 20px; border-bottom: 2px solid #004d99; }
+    .header-section h2 { color: #003366; font-size: 16px; margin-bottom: 15px; }
+    .dynamic-content { padding: 20px; display: none; }
+    .dynamic-content.active { display: block; }
+    .checkbox-group { display: flex; gap: 15px; margin-top: 8px; }
+    .checkbox-group label { display: inline-flex; align-items: center; margin-bottom: 0; font-weight: 600; }
+    .checkbox-group input[type="checkbox"], .checkbox-group input[type="radio"] { width: auto; margin-right: 6px; }
+    .actions { display: flex; gap: 10px; margin-top: 20px; justify-content: space-between; flex-wrap: wrap; }
+    button { padding: 10px 20px; font-size: 12px; border: 0; border-radius: 4px; cursor: pointer; font-weight: 700; transition: .3s; }
+    .btn-generate { background: #ff6600; color: #fff; flex: 1; min-width: 120px; }
+    .btn-generate:hover { background: #e55a00; }
+    .btn-copy { background: #0066cc; color: #fff; flex: 1; min-width: 120px; }
+    .btn-copy:hover { background: #0052a3; }
+    .btn-clear { background: #999; color: #fff; flex: 1; min-width: 120px; }
+    .btn-clear:hover { background: #777; }
+    .output-section { margin-top: 20px; padding: 15px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; display: none; }
+    .output-section.active { display: block; }
+    .output-section h3 { color: #003366; margin-bottom: 10px; font-size: 14px; }
+    .output-text { background: #fff; padding: 12px; border: 1px solid #999; border-radius: 4px; font-family: "Courier New", monospace; font-size: 11px; line-height: 1.6; color: #333; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+    .success-message { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 12px; display: none; }
+    .success-message.show { display: block; }
+    @media (max-width: 768px) {
+      .form-group { grid-template-columns: 1fr; }
+      .form-group.three-col { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
+      button { width: 100%; }
+    }
+  </style>
 </head>
+
 <body>
-    <!-- LOGIN -->
-    <div id="login" class="login-container">
-        <div class="login-header">
-            <h1>🔐 Controle de Materiais</h1>
-            <p>GPON - Sistema de Acesso</p>
-        </div>
-
-        <div id="loginAlert" class="alert alert-danger"></div>
-
-        <form id="loginForm" onsubmit="fazerLogin(event)">
-            <div class="form-group">
-                <label for="usuario">👤 Usuário</label>
-                <input type="text" id="usuario" placeholder="Digite seu usuário" required>
-            </div>
-
-            <div class="form-group">
-                <label for="senha">🔑 Senha</label>
-                <input type="password" id="senha" placeholder="Digite sua senha" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">🔓 Entrar</button>
-        </form>
-
-        <div class="test-users">
-            <h3>👤 Usuários de Teste</h3>
-            <p>joao / 1234</p>
-            <p>matheus / 1234</p>
-            <p>pedro / 1234</p>
-            <p>admin / admin123</p>
-        </div>
+  <div class="container">
+    <div class="header">
+      <h1>📋 Gerador de Carimbo - RS-CAPITAL</h1>
+      <p>Sistema de Acionamento - GPON - Vivo Rede</p>
     </div>
 
-    <!-- APLICAÇÃO -->
-    <div id="app" class="app-container">
-        <nav class="navbar">
-            <h2>📋 Controle de Materiais GPON</h2>
-            <div class="user-info">
-                <span>👤 <strong id="usuarioNome"></strong></span>
-                <button class="btn-logout" onclick="logout()">Sair</button>
-            </div>
-        </nav>
+    <div class="header-section">
+      <h2>Dados Gerais (Preenchidos para todos os carimbos)</h2>
 
-        <div class="main-content">
-            <div class="sidebar">
-                <div class="nav-item active" onclick="mostrarSecao('dashboard')">📊 Dashboard</div>
-                <div class="nav-item" onclick="mostrarSecao('registrar')">➕ Registrar Material</div>
-                <div class="nav-item" onclick="mostrarSecao('listar')">📋 Lista de Materiais</div>
-                <div class="nav-item" onclick="mostrarSecao('saidas')">📦 Saídas de Campo</div>
-                <div class="nav-item" onclick="mostrarSecao('entradas')">📥 Entradas/Devoluções</div>
-                <div id="navReabastecimento" class="nav-item" onclick="mostrarSecao('reabastecimento')" style="display: none;">🏭 Reabastecimento Central</div>
-                <div id="navUsuarios" class="nav-item" onclick="mostrarSecao('usuarios')" style="display: none;">👥 Gerenciar Usuários</div>
-            </div>
-
-            <div class="content">
-                <!-- DASHBOARD -->
-                <div id="dashboard" class="section active">
-                    <h2>📊 Dashboard</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <h3>Total de Materiais</h3>
-                            <div class="number" id="totalMateriais">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Valor Total em Estoque</h3>
-                            <div class="number" id="valorTotal">R$ 0</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Saídas Registradas</h3>
-                            <div class="number" id="totalSaidas">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Entradas Registradas</h3>
-                            <div class="number" id="totalEntradas">0</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- REGISTRAR MATERIAL -->
-                <div id="registrar" class="section">
-                    <h2>➕ Registrar Novo Material</h2>
-                    <div class="form-section">
-                        <form id="formRegistro" onsubmit="registrarMaterial(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="categoria">📦 Categoria</label>
-                                    <select id="categoria" required>
-                                        <option value="">Selecione a categoria</option>
-                                        <option value="OLT">OLT (Optical Line Terminal)</option>
-                                        <option value="ONU">ONU (Optical Network Unit)</option>
-                                        <option value="Splitter">Splitter</option>
-                                        <option value="Fibra">Fibra Óptica</option>
-                                        <option value="Conector">Conector</option>
-                                        <option value="CTO">CTO</option>
-                                        <option value="Emenda">Emenda</option>
-                                        <option value="Outros">Outros</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="modelo">📝 Modelo/Descrição</label>
-                                    <input type="text" id="modelo" placeholder="Ex: ONU Huawei HG8145V5" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="codigo">🔖 Código</label>
-                                    <input type="text" id="codigo" placeholder="Ex: HW001" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="serie">🏷️ Série</label>
-                                    <input type="text" id="serie" placeholder="Ex: SN123456">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="lote">📊 Lote</label>
-                                    <input type="text" id="lote" placeholder="Ex: LOT-2024-001">
-                                </div>
-                                <div class="form-group">
-                                    <label for="preco">💰 Preço Unitário (R$)</label>
-                                    <input type="number" id="preco" placeholder="0.00" step="0.01" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="quantidade">📈 Quantidade em Estoque</label>
-                                    <input type="number" id="quantidade" placeholder="0" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="localizacao">📍 Localização</label>
-                                    <input type="text" id="localizacao" placeholder="Ex: Prateleira A1">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-register">✅ Registrar Material</button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- LISTAR MATERIAIS -->
-                <div id="listar" class="section">
-                    <h2>📋 Lista de Materiais em Estoque</h2>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Categoria</th>
-                                    <th>Modelo</th>
-                                    <th>Código</th>
-                                    <th>Série</th>
-                                    <th>Quantidade</th>
-                                    <th>Preço Unit.</th>
-                                    <th>Total</th>
-                                    <th>Localização</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaMateriais"></tbody>
-                        </table>
-                        <div id="emptyMateriais" class="empty-message">Nenhum material registrado</div>
-                    </div>
-                </div>
-
-                <!-- SAÍDAS -->
-                <div id="saidas" class="section">
-                    <h2>📦 Registrar Saída de Campo</h2>
-                    <div class="form-section">
-                        <form id="formSaida" onsubmit="registrarSaida(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="materialSaida">Material</label>
-                                    <select id="materialSaida" required>
-                                        <option value="">Selecione o material</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="quantidadeSaida">Quantidade Saída</label>
-                                    <input type="number" id="quantidadeSaida" placeholder="0" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="tecnicianoSaida">Técnico</label>
-                                    <input type="text" id="tecnicianoSaida" placeholder="Nome do técnico" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="armarioSaida">Armário/Local</label>
-                                    <input type="text" id="armarioSaida" placeholder="Ex: I34, I35" required>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-register">✅ Registrar Saída</button>
-                        </form>
-                    </div>
-
-                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Histórico de Saídas</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Material</th>
-                                    <th>Quantidade</th>
-                                    <th>Técnico</th>
-                                    <th>Armário</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaSaidas"></tbody>
-                        </table>
-                        <div id="emptySaidas" class="empty-message">Nenhuma saída registrada</div>
-                    </div>
-                </div>
-
-                <!-- ENTRADAS -->
-                <div id="entradas" class="section">
-                    <h2>📥 Registrar Entrada/Devolução</h2>
-                    <div class="form-section">
-                        <form id="formEntrada" onsubmit="registrarEntrada(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="materialEntrada">Material</label>
-                                    <select id="materialEntrada" required>
-                                        <option value="">Selecione o material</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="quantidadeEntrada">Quantidade Entrada</label>
-                                    <input type="number" id="quantidadeEntrada" placeholder="0" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="tecnicianoEntrada">Técnico</label>
-                                    <input type="text" id="tecnicianoEntrada" placeholder="Nome do técnico" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="observacaoEntrada">Observação</label>
-                                    <input type="text" id="observacaoEntrada" placeholder="Devolução, reparo, etc">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-register">✅ Registrar Entrada</button>
-                        </form>
-                    </div>
-
-                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Histórico de Entradas</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Material</th>
-                                    <th>Quantidade</th>
-                                    <th>Técnico</th>
-                                    <th>Observação</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaEntradas"></tbody>
-                        </table>
-                        <div id="emptyEntradas" class="empty-message">Nenhuma entrada registrada</div>
-                    </div>
-                </div>
-
-                <!-- REABASTECIMENTO CENTRAL (APENAS ADMIN) -->
-                <div id="reabastecimento" class="section">
-                    <h2>🏭 Reabastecimento da Central</h2>
-                    <div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 6px; margin-bottom: 25px;">
-                        <p style="color: #155724; margin: 0;"><strong>🔒 Acesso Restrito:</strong> Apenas administrador pode registrar reabastecimento da central</p>
-                    </div>
-
-                    <div class="form-section">
-                        <form id="formReabastecimento" onsubmit="registrarReabastecimento(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="centralReab">🏭 Central</label>
-                                    <select id="centralReab" required>
-                                        <option value="">Selecione a central</option>
-                                        <option value="IND">IND - Industrial</option>
-                                        <option value="CAN">CAN - Canoas</option>
-                                        <option value="NYW">NYW - New York</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="fornecedor">🏢 Fornecedor</label>
-                                    <input type="text" id="fornecedor" placeholder="Ex: Distribuidor XYZ" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="notaFiscal">📄 Nota Fiscal/Pedido</label>
-                                    <input type="text" id="notaFiscal" placeholder="Ex: NF-2024-001" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="materialReab">Material</label>
-                                    <select id="materialReab" required>
-                                        <option value="">Selecione o material</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="quantidadeReab">Quantidade Recebida</label>
-                                    <input type="number" id="quantidadeReab" placeholder="0" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="precoReab">💰 Preço Unitário (R$)</label>
-                                    <input type="number" id="precoReab" placeholder="0.00" step="0.01" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row full">
-                                <div class="form-group">
-                                    <label for="observacaoReab">Observação</label>
-                                    <input type="text" id="observacaoReab" placeholder="Ex: Frete incluído, Urgente, etc">
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-register">✅ Registrar Reabastecimento</button>
-                        </form>
-                    </div>
-
-                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Histórico de Reabastecimentos</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Central</th>
-                                    <th>Fornecedor</th>
-                                    <th>Material</th>
-                                    <th>Quantidade</th>
-                                    <th>Preço Unit.</th>
-                                    <th>Total</th>
-                                    <th>NF/Pedido</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaReabastecimento"></tbody>
-                        </table>
-                        <div id="emptyReabastecimento" class="empty-message">Nenhum reabastecimento registrado</div>
-                    </div>
-                </div>
-
-                <!-- GERENCIAR USUÁRIOS (APENAS ADMIN) -->
-                <div id="usuarios" class="section">
-                    <h2>👥 Gerenciar Usuários</h2>
-                    <div style="background: #e7f3ff; border: 1px solid #b3d9ff; padding: 15px; border-radius: 6px; margin-bottom: 25px;">
-                        <p style="color: #004085; margin: 0;"><strong>🔐 Acesso Restrito:</strong> Apenas administrador pode adicionar e gerenciar usuários do sistema</p>
-                    </div>
-
-                    <div class="form-section">
-                        <h3 style="margin-bottom: 20px;">➕ Adicionar Novo Usuário</h3>
-                        <form id="formNovoUsuario" onsubmit="adicionarUsuario(event)">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="novoLogin">👤 Login (Usuário)</label>
-                                    <input type="text" id="novoLogin" placeholder="Ex: carlos" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="novoNome">📝 Nome Completo</label>
-                                    <input type="text" id="novoNome" placeholder="Ex: Carlos Silva" required>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="novaSenha">🔑 Senha</label>
-                                    <input type="password" id="novaSenha" placeholder="Digite a senha" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="novaCentral">🏭 Central Atribuída</label>
-                                    <select id="novaCentral" required>
-                                        <option value="">Selecione a central</option>
-                                        <option value="IND">IND - Industrial</option>
-                                        <option value="CAN">CAN - Canoas</option>
-                                        <option value="NYW">NYW - New York</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-register">✅ Adicionar Usuário</button>
-                        </form>
-                    </div>
-
-                    <h3 style="margin-top: 30px; margin-bottom: 15px;">📋 Lista de Usuários</h3>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Login</th>
-                                    <th>Nome</th>
-                                    <th>Central</th>
-                                    <th>Data Criação</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaUsuarios"></tbody>
-                        </table>
-                        <div id="emptyUsuarios" class="empty-message">Nenhum usuário registrado</div>
-                    </div>
-                </div>
-            </div>
+      <div class="form-group">
+        <div>
+          <label>ID Ocorrência/OS CTO (BA/TT)</label>
+          <input type="text" id="id_ocorrencia" placeholder="Ex: 123456">
         </div>
+        <div>
+          <label>Selecione o Tipo de Carimbo</label>
+          <select id="carimbo_tipo">
+            <option value="">-- Selecione --</option>
+            <option value="acionamento">1. Acionamento</option>
+            <option value="deslocamento">2. Deslocamento ao Ponto da Falha</option>
+            <option value="recuperacao">3. Recuperação da Falha</option>
+            <option value="certificacao">4. Certificação</option>
+            <option value="complementar">Complementar</option>
+            <option value="naofalha">Não há Falha para Rede</option>
+            <option value="transbordo">Transbordo</option>
+            <option value="prazo">Prazo de Reparo</option>
+            <option value="cire">CIRE</option>
+            <option value="escalonamento">Escalonamento sem Equipe</option>
+            <option value="cto_defeito">CTO com Defeito</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div>
+          <label>SUPERVISOR</label>
+          <input type="text" id="supervisor" list="supervisorList" placeholder="Nome do Supervisor">
+          <datalist id="supervisorList">
+            <option value="Alexandre Ilha"></option>
+            <option value="Diego Jaworski"></option>
+            <option value="Diego Richter"></option>
+            <option value="Marcio Mendes"></option>
+            <option value="Mário Pereira"></option>
+            <option value="Rodrigo Duarte"></option>
+            <option value="Rodrigo Rosa"></option>
+          </datalist>
+        </div>
+        <div>
+          <label>Telefone Supervisor</label>
+          <input type="tel" id="supervisor_tel" placeholder="(51) 9XXXX-XXXX">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div>
+          <label>TÉCNICO</label>
+          <input type="text" id="tecnico" placeholder="Nome do Técnico">
+        </div>
+        <div>
+          <label>Telefone Técnico</label>
+          <input type="tel" id="tecnico_tel" placeholder="(51) 9XXXX-XXXX">
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <div>
+          <label>Analista CCR</label>
+          <input type="text" id="analista_ccr" list="analistaList" placeholder="Digite para pesquisar ou selecione na lista">
+          <datalist id="analistaList">
+            <option value="CARINA DE FATIMA CHUQUEL"></option>
+            <option value="EDMILSON GARCIA RIEIRA"></option>
+            <option value="EDUARDA PAIVA RODRIGUES"></option>
+            <option value="JULIA DOS SANTOS DA SILVA"></option>
+            <option value="MATHEUS ALVES CASTRO"></option>
+            <option value="RAFAELA VERCH DIAS"></option>
+            <option value="SILVIO LUIZ RACHOR PUTRIQUE"></option>
+          </datalist>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // ===== BANCO DE DADOS LOCAL =====
-        let usuariosDB = {
-            'joao': { senha: '1234', nome: 'João Silva', central: 'IND' },
-            'matheus': { senha: '1234', nome: 'Matheus Costa', central: 'CAN' },
-            'pedro': { senha: '1234', nome: 'Pedro Santos', central: 'NYW' },
-            'admin': { senha: 'admin123', nome: 'Administrador', central: 'ADM' }
-        };
+    <div class="dynamic-content active" id="content-default">
+      <div class="section">
+        <p style="color: #666; text-align: center; padding: 40px 20px;">
+          Selecione um tipo de carimbo acima para ver os campos específicos.
+        </p>
+      </div>
+    </div>
 
-        let usuarioLogado = null;
-        let materiais = [];
-        let saidas = [];
-        let entradas = [];
-        let reabastecimentos = [];
+    <div class="dynamic-content" id="content-acionamento">
+      <div class="section">
+        <div class="section-title">ACIONAMENTO</div>
+        <div class="form-group">
+          <div>
+            <label>Previsão de chegada ao SITE/ARO para medições</label>
+            <input type="time" id="acionamento_prev_chegada">
+          </div>
+          <div>
+            <label>Nome SITE/ARO para medições</label>
+            <input type="text" id="acionamento_site" list="siteList" placeholder="Digite para pesquisar ou selecione na lista">
+            <datalist id="siteList">
+              <option value="RSCBM_G1N01"></option>
+              <option value="RSCBM_O1A01"></option>
+              <option value="RSCQU_G1I01"></option>
+              <option value="RSGUB_G1N01"></option>
+              <option value="RSPAE_G1B95"></option>
+              <option value="RSPAE_G1C01"></option>
+              <option value="RSPAE_G1I22"></option>
+              <option value="RSPAE_G1I23"></option>
+              <option value="RSPAE_G1I24"></option>
+              <option value="RSPAE_G1I25"></option>
+              <option value="RSPAE_G1I26"></option>
+              <option value="RSPAE_G1I32"></option>
+              <option value="RSPAE_G1I33"></option>
+              <option value="RSPAE_G1I35"></option>
+              <option value="RSPAE_G1I41"></option>
+              <option value="RSPAE_G1I47"></option>
+              <option value="RSPAE_G1I48"></option>
+              <option value="RSPAE_G1I55"></option>
+              <option value="RSPAE_G1N42"></option>
+              <option value="RSPAE_G1N45"></option>
+              <option value="RSSLE_O1A04"></option>
+            </datalist>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('acionamento')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
 
-        // Carregar dados do localStorage
-        function carregarDados() {
-            const dados = localStorage.getItem('appDados');
-            if (dados) {
-                const parsed = JSON.parse(dados);
-                materiais = parsed.materiais || [];
-                saidas = parsed.saidas || [];
-                entradas = parsed.entradas || [];
-                reabastecimentos = parsed.reabastecimentos || [];
-            }
+    <div class="dynamic-content" id="content-deslocamento">
+      <div class="section">
+        <div class="section-title">DESLOCAMENTO AO PONTO DA FALHA</div>
+        <div class="form-group">
+          <div>
+            <label>KM até o LOCAL da falha</label>
+            <input type="number" id="deslocamento_km" placeholder="Ex: 15.5" step="0.1">
+          </div>
+          <div>
+            <label>Previsão de chegada ao LOCAL da falha</label>
+            <input type="time" id="deslocamento_prev_chegada">
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Observações</label>
+            <textarea id="deslocamento_obs" placeholder="Observações sobre o deslocamento"></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('deslocamento')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-recuperacao">
+      <div class="section">
+        <div class="section-title">RECUPERAÇÃO DA FALHA</div>
+        <div class="form-group">
+          <div>
+            <label>Causa raiz</label>
+            <select id="recuperacao_causa">
+              <option value="" disabled selected>Selecione</option>
+              <option value="Abalroamento">Abalroamento</option>
+              <option value="Furto">Furto</option>
+              <option value="Acidente">Acidente</option>
+              <option value="Descarga">Descarga</option>
+              <option value="Vandalismo">Vandalismo</option>
+              <option value="Troca de poste">Troca de poste</option>
+              <option value="Degradação / Infiltração">Degradação / Infiltração</option>
+              <option value="Defeito Splitter">Defeito Splitter</option>
+              <option value="Falha em atividade anterior">Falha em atividade anterior</option>
+              <option value="Obra de terceiros">Obra de terceiros</option>
+              <option value="Interperie">Interperie</option>
+              <option value="Ataque de animais">Ataque de animais</option>
+            </select>
+          </div>
+          <div>
+            <label>Previsão para solicitação de testes</label>
+            <input type="time" id="recuperacao_prev_testes">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Endereço da falha</label>
+            <input type="text" id="recuperacao_endereco" placeholder="Rua, Número, Complemento">
+          </div>
+          <div>
+            <label>Cabo / Capacidade / ARO</label>
+            <input type="text" id="recuperacao_cabo" placeholder="Ex: DROP 4F, 12F, 24F, 36F, 48F, 72F, 144F">
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Tratativas realizadas</label>
+            <textarea id="recuperacao_tratativas" placeholder="Descreva as tratativas"></textarea>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Observações</label>
+            <textarea id="recuperacao_obs" placeholder="Observações gerais"></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('recuperacao')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-certificacao">
+      <div class="section">
+        <div class="section-title">SOLICITAÇÃO DE CERTIFICAÇÃO</div>
+        <div class="form-group full">
+          <div>
+            <label>Tratativa realizada</label>
+            <textarea id="certificacao_tratativa" placeholder="Descrição da tratativa realizada"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Causa</label>
+            <select id="certificacao_causa">
+              <option value="" disabled selected>Selecione</option>
+              <option value="Abalroamento">Abalroamento</option>
+              <option value="Furto">Furto</option>
+              <option value="Acidente">Acidente</option>
+              <option value="Descarga">Descarga</option>
+              <option value="Vandalismo">Vandalismo</option>
+              <option value="Troca de poste">Troca de poste</option>
+              <option value="Degradação / Infiltração">Degradação / Infiltração</option>
+              <option value="Defeito Splitter">Defeito Splitter</option>
+              <option value="Falha em atividade anterior">Falha em atividade anterior</option>
+              <option value="Obra de terceiros">Obra de terceiros</option>
+              <option value="Interperie">Interperie</option>
+              <option value="Ataque de animais">Ataque de animais</option>
+            </select>
+          </div>
+          <div>
+            <label>Material utilizado</label>
+            <input type="text" id="certificacao_material" placeholder="Ex: Conector SC, Fibra óptica">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Foto em anexo</label>
+            <div class="checkbox-group">
+              <label><input type="radio" name="certificacao_foto" value="Sim"> Sim</label>
+              <label><input type="radio" name="certificacao_foto" value="Não"> Não</label>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('certificacao')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-complementar">
+      <div class="section">
+        <div class="section-title">COMPLEMENTAR</div>
+        <div class="form-group">
+          <div>
+            <label>Motivo</label>
+            <input type="text" id="complementar_motivo" placeholder="Motivo da complementação">
+          </div>
+          <div>
+            <label>Informação</label>
+            <input type="text" id="complementar_info" placeholder="Informação adicional">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Nova previsão?</label>
+            <div class="checkbox-group">
+              <label><input type="radio" name="nova_previsao" value="Sim"> Sim</label>
+              <label><input type="radio" name="nova_previsao" value="Não"> Não</label>
+            </div>
+          </div>
+          <div>
+            <label>Previsão</label>
+            <input type="time" id="complementar_previsao">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('complementar')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-naofalha">
+      <div class="section">
+        <div class="section-title">NÃO HÁ FALHA PARA REDE</div>
+        <div class="form-group full">
+          <div>
+            <label>Motivo da Improdutiva</label>
+            <textarea id="naofalha_motivo" placeholder="Descreva o motivo da improdutiva"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Foto em anexo</label>
+            <div class="checkbox-group">
+              <label><input type="radio" name="naofalha_foto" value="Sim"> Sim</label>
+              <label><input type="radio" name="naofalha_foto" value="Não"> Não</label>
+            </div>
+          </div>
+          <div>
+            <label>Ciente (Gestor VIVO Rede)</label>
+            <input type="text" id="naofalha_gestor" value="João Andrioli" readonly>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('naofalha')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-transbordo">
+      <div class="section">
+        <div class="section-title">TRANSBORDO</div>
+        <div class="form-group">
+          <div>
+            <label>TA</label>
+            <input type="text" id="transbordota" placeholder="TA">
+          </div>
+          <div>
+            <label>CONTRATO</label>
+            <input type="text" id="transbordocontrato" placeholder="Contrato">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>TRANSBORDO</label>
+            <input type="text" id="transbordooperadora" value="VIVO" readonly>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('transbordo')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-prazo">
+      <div class="section">
+        <div class="section-title">PRAZO DE REPARO</div>
+        <div class="form-group">
+          <div>
+            <label>Cargo</label>
+            <input type="text" id="prazoreparocargo" placeholder="Ex: Coordenador, Supervisor">
+          </div>
+          <div>
+            <label>Nome / Telefone</label>
+            <input type="text" id="prazoreparonometel" placeholder="Nome e telefone">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>SLA do evento</label>
+            <input type="text" id="prazoreparosla" placeholder="Ex: 4h, 2h">
+          </div>
+          <div>
+            <label>Observações</label>
+            <input type="text" id="prazoreparoobs" placeholder="Observações">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('prazo')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-cire">
+      <div class="section">
+        <div class="section-title">INTERVENÇÃO CIRE</div>
+        <div class="form-group">
+          <div>
+            <label>Solicitante</label>
+            <input type="text" id="cire_solicitante" placeholder="Nome do Solicitante">
+          </div>
+          <div>
+            <label>Meio de contato</label>
+            <div class="checkbox-group">
+              <label><input type="radio" name="cire_contato" value="Telefone"> Telefone</label>
+              <label><input type="radio" name="cire_contato" value="E-mail"> E-mail</label>
+              <label><input type="radio" name="cire_contato" value="WhatsApp"> WhatsApp</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Motivo</label>
+            <textarea id="cire_motivo" placeholder="Descreva o motivo da intervenção CIRE"></textarea>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Informação</label>
+            <textarea id="cire_info" placeholder="Informações adicionais"></textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Previsão</label>
+            <input type="time" id="cire_previsao">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('cire')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-escalonamento">
+      <div class="section">
+        <div class="section-title">ESCALONAMENTO SEM EQUIPE</div>
+        <div class="form-group">
+          <div>
+            <label>Cargo</label>
+            <input type="text" id="escalonamento_cargo" placeholder="Ex: Coordenador, Supervisor">
+          </div>
+          <div>
+            <label>Nome / Telefone</label>
+            <input type="text" id="escalonamento_nome_tel" placeholder="Nome e telefone">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>SLA do evento</label>
+            <input type="text" id="escalonamento_sla" placeholder="Ex: 4h, 2h">
+          </div>
+          <div>
+            <label>Observações</label>
+            <input type="text" id="escalonamento_obs" placeholder="Observações">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('escalonamento')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="dynamic-content" id="content-cto_defeito">
+      <div class="section">
+        <div class="section-title">CTO COM DEFEITO</div>
+        <div class="form-group">
+          <div>
+            <label>Nome SITE/ARO</label>
+            <input type="text" id="cto_defeito_site" list="siteList" placeholder="Digite para pesquisar ou selecione na lista">
+          </div>
+          <div>
+            <label>Splitter</label>
+            <input type="text" id="cto_defeito_splitter" placeholder="Ex: SP001, SP144">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Caixa</label>
+            <input type="text" id="cto_defeito_caixa" placeholder="Ex: G0001, G0099, GP0050">
+          </div>
+          <div>
+            <label>Endereço</label>
+            <input type="text" id="cto_defeito_endereco" placeholder="Rua, Número, Complemento">
+          </div>
+        </div>
+        <div class="form-group">
+          <div>
+            <label>Causa</label>
+            <select id="cto_defeito_causa">
+              <option value="" disabled selected>Selecione</option>
+              <option value="Abalroamento">Abalroamento</option>
+              <option value="Furto">Furto</option>
+              <option value="Acidente">Acidente</option>
+              <option value="Descarga">Descarga</option>
+              <option value="Vandalismo">Vandalismo</option>
+              <option value="Troca de poste">Troca de poste</option>
+              <option value="Degradação / Infiltração">Degradação / Infiltração</option>
+              <option value="Defeito Splitter">Defeito Splitter</option>
+              <option value="Falha em atividade anterior">Falha em atividade anterior</option>
+              <option value="Obra de terceiros">Obra de terceiros</option>
+              <option value="Interperie">Interperie</option>
+              <option value="Ataque de animais">Ataque de animais</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Tratativa realizada</label>
+            <textarea id="cto_defeito_tratativa" placeholder="Descreva a tratativa realizada"></textarea>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div>
+            <label>Material utilizado</label>
+            <input type="text" id="cto_defeito_material" placeholder="Ex: Conector SC, Fibra óptica, Splitter">
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn-generate" onclick="generateStamp('cto_defeito')">Gerar Carimbo</button>
+          <button class="btn-clear" onclick="clearDynamic()">Limpar Formulário</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="output" class="output-section">
+      <h3>Carimbo de Texto Gerado</h3>
+      <div class="output-text" id="outputText"></div>
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+        <button class="btn-copy" onclick="copyToClipboard()">Copiar para Área de Transferência</button>
+        <button class="btn-copy" onclick="sendToWhatsApp()" style="background:#25d366;">Enviar via WhatsApp</button>
+      </div>
+      <div class="success-message" id="successMessage">Texto copiado para a área de transferência!</div>
+    </div>
+  </div>
+
+  <script>
+    const supervisorPhones = {
+      "alexandre ilha": "(51) 99753-4576",
+      "diego jaworski": "(51) 99670-7110",
+      "diego richter": "(51) 99754-9214",
+      "marcio mendes": "(51) 99589-2075",
+      "mario pereira": "(51) 99837-8234",
+      "rodrigo duarte": "(51) 99758-7793",
+      "rodrigo rosa": "(51) 99840-6074"
+    };
+
+    function normalizeName(str) {
+      return (str || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+    }
+
+    document.getElementById("carimbo_tipo").addEventListener("change", function() {
+      const tipo = this.value;
+      document.querySelectorAll(".dynamic-content").forEach(el => {
+        el.classList.remove("active");
+      });
+      if (tipo) {
+        const contentId = "content-" + tipo;
+        const content = document.getElementById(contentId);
+        if (content) content.classList.add("active");
+      } else {
+        document.getElementById("content-default").classList.add("active");
+      }
+      document.getElementById("output").classList.remove("active");
+    });
+
+    document.getElementById("supervisor").addEventListener("input", function() {
+      const nome = this.value;
+      const tel = supervisorPhones[normalizeName(nome)];
+      if (tel) document.getElementById("supervisor_tel").value = tel;
+    });
+
+    function clearDynamic() {
+      const tipo = document.getElementById("carimbo_tipo").value;
+      if (!tipo) return;
+      const contentId = "content-" + tipo;
+      const content = document.getElementById(contentId);
+      const inputs = content.querySelectorAll("input[type='text'], input[type='tel'], input[type='number'], input[type='time'], textarea, select");
+      inputs.forEach(input => {
+        if (input.readOnly) return;
+        if (input.type === "radio" || input.type === "checkbox") {
+          input.checked = false;
+        } else {
+          input.value = "";
         }
-
-        // Salvar dados no localStorage
-        function salvarDados() {
-            localStorage.setItem('appDados', JSON.stringify({
-                materiais,
-                saidas,
-                entradas,
-                reabastecimentos
-            }));
-        }
-
-        // ===== LOGIN =====
-        function fazerLogin(e) {
-            e.preventDefault();
-            const usuario = document.getElementById('usuario').value;
-            const senha = document.getElementById('senha').value;
-            const alert = document.getElementById('loginAlert');
-
-            if (usuariosDB[usuario] && usuariosDB[usuario].senha === senha) {
-                usuarioLogado = { login: usuario, nome: usuariosDB[usuario].nome };
-                localStorage.setItem('usuarioLogado', JSON.stringify(usuarioLogado));
-                mostrarApp();
-                document.getElementById('usuarioNome').textContent = usuarioLogado.nome;
-                atualizarDashboard();
-                atualizarSelects();
-            } else {
-                alert.textContent = '❌ Usuário ou senha incorretos';
-                alert.classList.add('show');
-                setTimeout(() => alert.classList.remove('show'), 3000);
-            }
-        }
-
-        function logout() {
-            if (confirm('Deseja realmente sair?')) {
-                usuarioLogado = null;
-                localStorage.removeItem('usuarioLogado');
-                document.getElementById('login').style.display = 'flex';
-                document.getElementById('app').classList.remove('show');
-                document.getElementById('usuario').value = '';
-                document.getElementById('senha').value = '';
-            }
-        }
-
-        function mostrarApp() {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('app').classList.add('show');
-            // Mostrar menu admin apenas para admin
-            const navReab = document.getElementById('navReabastecimento');
-            const navUsr = document.getElementById('navUsuarios');
-            if (usuarioLogado.login === 'admin') {
-                navReab.style.display = 'block';
-                navUsr.style.display = 'block';
-            } else {
-                navReab.style.display = 'none';
-                navUsr.style.display = 'none';
-            }
-        }
-
-        // ===== NAVEGAÇÃO =====
-        function mostrarSecao(secao) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(secao).classList.add('active');
-            event.target.classList.add('active');
-
-            if (secao === 'listar') atualizarTabelaMateriais();
-            if (secao === 'saidas') atualizarTabelaSaidas();
-            if (secao === 'entradas') atualizarTabelaEntradas();
-        }
-
-        // ===== REGISTRO DE MATERIAL =====
-        function registrarMaterial(e) {
-            e.preventDefault();
-            const material = {
-                id: Date.now(),
-                categoria: document.getElementById('categoria').value,
-                modelo: document.getElementById('modelo').value,
-                codigo: document.getElementById('codigo').value,
-                serie: document.getElementById('serie').value,
-                lote: document.getElementById('lote').value,
-                preco: parseFloat(document.getElementById('preco').value),
-                quantidade: parseInt(document.getElementById('quantidade').value),
-                localizacao: document.getElementById('localizacao').value,
-                dataCadastro: new Date().toLocaleDateString('pt-BR')
-            };
-
-            materiais.push(material);
-            salvarDados();
-            document.getElementById('formRegistro').reset();
-            alert('✅ Material registrado com sucesso!');
-            atualizarDashboard();
-            atualizarSelects();
-        }
-
-        function atualizarTabelaMateriais() {
-            const tbody = document.getElementById('tabelaMateriais');
-            const empty = document.getElementById('emptyMateriais');
-
-            tbody.innerHTML = '';
-
-            if (materiais.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
-
-            empty.style.display = 'none';
-
-            materiais.forEach(m => {
-                const total = (m.preco * m.quantidade).toFixed(2);
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${m.categoria}</td>
-                    <td>${m.modelo}</td>
-                    <td>${m.codigo}</td>
-                    <td>${m.serie || '-'}</td>
-                    <td>${m.quantidade}</td>
-                    <td>R$ ${m.preco.toFixed(2)}</td>
-                    <td>R$ ${total}</td>
-                    <td>${m.localizacao}</td>
-                    <td><button class="btn-delete" onclick="deletarMaterial(${m.id})">🗑️ Deletar</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function deletarMaterial(id) {
-            if (confirm('Deseja deletar este material?')) {
-                materiais = materiais.filter(m => m.id !== id);
-                salvarDados();
-                atualizarTabelaMateriais();
-                atualizarDashboard();
-                atualizarSelects();
-            }
-        }
-
-        // ===== SAÍDAS =====
-        function registrarSaida(e) {
-            e.preventDefault();
-            const materialId = parseInt(document.getElementById('materialSaida').value);
-            const quantidade = parseInt(document.getElementById('quantidadeSaida').value);
-            const material = materiais.find(m => m.id === materialId);
-
-            if (!material || quantidade > material.quantidade) {
-                alert('❌ Quantidade insuficiente em estoque');
-                return;
-            }
-
-            material.quantidade -= quantidade;
-            saidas.push({
-                id: Date.now(),
-                materialId,
-                materialNome: material.modelo,
-                quantidade,
-                tecnico: document.getElementById('tecnicianoSaida').value,
-                armario: document.getElementById('armarioSaida').value,
-                data: new Date().toLocaleDateString('pt-BR')
-            });
-
-            salvarDados();
-            document.getElementById('formSaida').reset();
-            alert('✅ Saída registrada com sucesso!');
-            atualizarDashboard();
-            atualizarSelects();
-        }
-
-        function atualizarTabelaSaidas() {
-            const tbody = document.getElementById('tabelaSaidas');
-            const empty = document.getElementById('emptySaidas');
-
-            tbody.innerHTML = '';
-
-            if (saidas.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
-
-            empty.style.display = 'none';
-
-            saidas.forEach(s => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${s.data}</td>
-                    <td>${s.materialNome}</td>
-                    <td>${s.quantidade}</td>
-                    <td>${s.tecnico}</td>
-                    <td>${s.armario}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // ===== ENTRADAS =====
-        function registrarEntrada(e) {
-            e.preventDefault();
-            const materialId = parseInt(document.getElementById('materialEntrada').value);
-            const quantidade = parseInt(document.getElementById('quantidadeEntrada').value);
-            const material = materiais.find(m => m.id === materialId);
-
-            if (!material) {
-                alert('❌ Material não encontrado');
-                return;
-            }
-
-            material.quantidade += quantidade;
-            entradas.push({
-                id: Date.now(),
-                materialId,
-                materialNome: material.modelo,
-                quantidade,
-                tecnico: document.getElementById('tecnicianoEntrada').value,
-                observacao: document.getElementById('observacaoEntrada').value,
-                data: new Date().toLocaleDateString('pt-BR')
-            });
-
-            salvarDados();
-            document.getElementById('formEntrada').reset();
-            alert('✅ Entrada registrada com sucesso!');
-            atualizarDashboard();
-            atualizarSelects();
-        }
-
-        function atualizarTabelaEntradas() {
-            const tbody = document.getElementById('tabelaEntradas');
-            const empty = document.getElementById('emptyEntradas');
-
-            tbody.innerHTML = '';
-
-            if (entradas.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
-
-            empty.style.display = 'none';
-
-            entradas.forEach(e => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${e.data}</td>
-                    <td>${e.materialNome}</td>
-                    <td>${e.quantidade}</td>
-                    <td>${e.tecnico}</td>
-                    <td>${e.observacao || '-'}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // ===== DASHBOARD =====
-        function atualizarDashboard() {
-            const total = materiais.length;
-            const valor = materiais.reduce((acc, m) => acc + (m.preco * m.quantidade), 0);
-            
-            document.getElementById('totalMateriais').textContent = total;
-            document.getElementById('valorTotal').textContent = 'R$ ' + valor.toFixed(2);
-            document.getElementById('totalSaidas').textContent = saidas.length;
-            document.getElementById('totalEntradas').textContent = entradas.length;
-        }
-
-        // ===== SELECTS =====
-        function atualizarSelects() {
-            const selectSaida = document.getElementById('materialSaida');
-            const selectEntrada = document.getElementById('materialEntrada');
-            const selectReab = document.getElementById('materialReab');
-
-            selectSaida.innerHTML = '<option value="">Selecione o material</option>';
-            selectEntrada.innerHTML = '<option value="">Selecione o material</option>';
-            selectReab.innerHTML = '<option value="">Selecione o material</option>';
-
-            materiais.forEach(m => {
-                const opt1 = document.createElement('option');
-                opt1.value = m.id;
-                opt1.textContent = `${m.modelo} (${m.quantidade} em estoque)`;
-                selectSaida.appendChild(opt1);
-
-                const opt2 = document.createElement('option');
-                opt2.value = m.id;
-                opt2.textContent = `${m.modelo} (${m.quantidade} em estoque)`;
-                selectEntrada.appendChild(opt2);
-
-                const opt3 = document.createElement('option');
-                opt3.value = m.id;
-                opt3.textContent = `${m.modelo}`;
-                selectReab.appendChild(opt3);
-            });
-        }
-
-        // ===== REABASTECIMENTO CENTRAL =====
-        function registrarReabastecimento(e) {
-            e.preventDefault();
-            
-            // Verificar se é admin
-            if (usuarioLogado.login !== 'admin') {
-                alert('❌ Acesso negado! Apenas administrador pode registrar reabastecimento');
-                return;
-            }
-
-            const central = document.getElementById('centralReab').value;
-            const materialId = parseInt(document.getElementById('materialReab').value);
-            const quantidade = parseInt(document.getElementById('quantidadeReab').value);
-            const preco = parseFloat(document.getElementById('precoReab').value);
-            const material = materiais.find(m => m.id === materialId);
-
-            if (!material) {
-                alert('❌ Material não encontrado');
-                return;
-            }
-
-            material.quantidade += quantidade;
-            material.preco = preco; // Atualizar preço se mudou
-
-            reabastecimentos.push({
-                id: Date.now(),
-                central,
-                materialId,
-                materialNome: material.modelo,
-                quantidade,
-                preco,
-                total: (quantidade * preco).toFixed(2),
-                fornecedor: document.getElementById('fornecedor').value,
-                notaFiscal: document.getElementById('notaFiscal').value,
-                observacao: document.getElementById('observacaoReab').value,
-                data: new Date().toLocaleDateString('pt-BR'),
-                admin: usuarioLogado.nome
-            });
-
-            salvarDados();
-            document.getElementById('formReabastecimento').reset();
-            alert('✅ Reabastecimento registrado com sucesso!');
-            atualizarDashboard();
-            atualizarSelects();
-            atualizarTabelaReabastecimento();
-        }
-
-        function atualizarTabelaReabastecimento() {
-            const tbody = document.getElementById('tabelaReabastecimento');
-            const empty = document.getElementById('emptyReabastecimento');
-
-            tbody.innerHTML = '';
-
-            if (reabastecimentos.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
-
-            empty.style.display = 'none';
-
-            reabastecimentos.forEach(r => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${r.data}</td>
-                    <td>${r.central}</td>
-                    <td>${r.fornecedor}</td>
-                    <td>${r.materialNome}</td>
-                    <td>${r.quantidade}</td>
-                    <td>R$ ${r.preco.toFixed(2)}</td>
-                    <td>R$ ${r.total}</td>
-                    <td>${r.notaFiscal}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // ===== GERENCIAR USUÁRIOS =====
-        function adicionarUsuario(e) {
-            e.preventDefault();
-
-            // Verificar se é admin
-            if (usuarioLogado.login !== 'admin') {
-                alert('❌ Acesso negado! Apenas administrador pode adicionar usuários');
-                return;
-            }
-
-            const login = document.getElementById('novoLogin').value.toLowerCase();
-            const nome = document.getElementById('novoNome').value;
-            const senha = document.getElementById('novaSenha').value;
-            const central = document.getElementById('novaCentral').value;
-
-            // Validar se login já existe
-            if (usuariosDB[login]) {
-                alert('❌ Este login já existe! Escolha outro');
-                return;
-            }
-
-            // Validar força da senha
-            if (senha.length < 4) {
-                alert('❌ A senha deve ter no mínimo 4 caracteres');
-                return;
-            }
-
-            // Adicionar novo usuário
-            usuariosDB[login] = {
-                senha,
-                nome,
-                central,
-                dataCriacao: new Date().toLocaleDateString('pt-BR')
-            };
-
-            salvarDados();
-            document.getElementById('formNovoUsuario').reset();
-            alert(`✅ Usuário "${login}" adicionado com sucesso!`);
-            atualizarTabelaUsuarios();
-        }
-
-        function atualizarTabelaUsuarios() {
-            const tbody = document.getElementById('tabelaUsuarios');
-            const empty = document.getElementById('emptyUsuarios');
-
-            tbody.innerHTML = '';
-
-            const usuarios = Object.entries(usuariosDB);
-
-            if (usuarios.length === 0) {
-                empty.style.display = 'block';
-                return;
-            }
-
-            empty.style.display = 'none';
-
-            usuarios.forEach(([login, dados]) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong>${login}</strong></td>
-                    <td>${dados.nome}</td>
-                    <td>${dados.central}</td>
-                    <td>${dados.dataCriacao || 'Sistema'}</td>
-                    <td>
-                        ${login !== 'admin' ? `<button class="btn-delete" onclick="deletarUsuario('${login}')">🗑️ Deletar</button>` : '<span style="color: #999;">Protegido</span>'}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function deletarUsuario(login) {
-            if (login === 'admin') {
-                alert('❌ Não é possível deletar o usuário administrador');
-                return;
-            }
-
-            if (confirm(`Deseja realmente deletar o usuário "${login}"?`)) {
-                delete usuariosDB[login];
-                salvarDados();
-                atualizarTabelaUsuarios();
-                alert(`✅ Usuário "${login}" deletado com sucesso!`);
-            }
-        }
-
-        // ===== INICIALIZAÇÃO =====
-        window.addEventListener('DOMContentLoaded', () => {
-            carregarDados();
-            const usuarioArmazenado = localStorage.getItem('usuarioLogado');
-            if (usuarioArmazenado) {
-                usuarioLogado = JSON.parse(usuarioArmazenado);
-                document.getElementById('usuarioNome').textContent = usuarioLogado.nome;
-                mostrarApp();
-                atualizarDashboard();
-                atualizarSelects();
-                atualizarTabelaUsuarios();
-            }
-        });
-    </script>
+      });
+    }
+
+    function generateStamp(tipo) {
+      const idOcorrencia = document.getElementById("id_ocorrencia").value;
+      const supervisor = document.getElementById("supervisor").value;
+      const supervisorTel = document.getElementById("supervisor_tel").value;
+      const tecnico = document.getElementById("tecnico").value;
+      const tecnicoTel = document.getElementById("tecnico_tel").value;
+      const analistaCCR = document.getElementById("analista_ccr").value;
+      let stamp = "";
+
+      if (tipo === "acionamento") {
+        const prevChegada = document.getElementById("acionamento_prev_chegada").value;
+        const site = document.getElementById("acionamento_site").value;
+        stamp = `1 – ACIONAMENTO<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+Previsão de chegada ao SITE/ARO para medições: ${prevChegada}<br>\nNome SITE/ARO para medições: ${site}<br>
+Analista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "deslocamento") {
+        const km = document.getElementById("deslocamento_km").value;
+        const prevChegada = document.getElementById("deslocamento_prev_chegada").value;
+        const obs = document.getElementById("deslocamento_obs").value;
+        stamp = `2 – DESLOCAMENTO AO PONTO DA FALHA<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+KM até o LOCAL da falha: ${km} km<br>\nPrevisão de chegada ao LOCAL da falha: ${prevChegada}<br>
+Obs.: ${obs}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "recuperacao") {
+        const causa = document.getElementById("recuperacao_causa").value;
+        const prevTestes = document.getElementById("recuperacao_prev_testes").value;
+        const endereco = document.getElementById("recuperacao_endereco").value;
+        const cabo = document.getElementById("recuperacao_cabo").value;
+        const tratativas = document.getElementById("recuperacao_tratativas").value;
+        const obs = document.getElementById("recuperacao_obs").value;
+        stamp = `3 – RECUPERAÇÃO DA FALHA<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+Causa raiz: ${causa}<br>\nPrevisão para solicitação de testes: ${prevTestes}<br>\nEndereço da falha: ${endereco}<br>\nCabo/Capacidade/ARO: ${cabo}<br>
+Tratativas realizadas: ${tratativas}<br>
+Obs.: ${obs}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "certificacao") {
+        const tratativa = document.getElementById("certificacao_tratativa").value;
+        const causa = document.getElementById("certificacao_causa").value;
+        const material = document.getElementById("certificacao_material").value;
+        const foto = document.querySelector("input[name='certificacao_foto']:checked")?.value || "";
+        stamp = `4 – SOLICITAÇÃO DE CERTIFICAÇÃO<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+Tratativa realizada: ${tratativa}<br>\nCausa: ${causa}<br>\nMaterial utilizado: ${material}<br>\nFoto em anexo: ${foto}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "complementar") {
+        const motivo = document.getElementById("complementar_motivo").value;
+        const info = document.getElementById("complementar_info").value;
+        const novaPrevisao = document.querySelector("input[name='nova_previsao']:checked")?.value || "";
+        const previsao = document.getElementById("complementar_previsao").value;
+        stamp = `3B – COMPLEMENTAR<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+Motivo: ${motivo}<br>\nInformação: ${info}<br>\nNova previsão? ${novaPrevisao}<br>\nPrevisão: ${previsao}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "naofalha") {
+        const motivo = document.getElementById("naofalha_motivo").value;
+        const foto = document.querySelector("input[name='naofalha_foto']:checked")?.value || "";
+        const gestor = document.getElementById("naofalha_gestor").value;
+        stamp = `NÃO HÁ FALHA PARA REDE<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+Motivo da improdutiva: ${motivo}<br>\nFoto em anexo: ${foto}<br>\nCiente (Gestor VIVO Rede): ${gestor}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "transbordo") {
+        const ta = document.getElementById("transbordota").value;
+        const contrato = document.getElementById("transbordocontrato").value;
+        const transbordo = document.getElementById("transbordooperadora").value;
+        stamp = `TRANSBORDO<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+TA: ${ta}<br>\nCONTRATO: ${contrato}<br>\nTRANSBORDO: ${transbordo}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "prazo") {
+        const cargo = document.getElementById("prazoreparocargo").value;
+        const nomeTel = document.getElementById("prazoreparonometel").value;
+        const sla = document.getElementById("prazoreparosla").value;
+        const obs = document.getElementById("prazoreparoobs").value;
+        stamp = `PRAZO DE REPARO<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+Cargo: ${cargo}<br>\nNome/Tel.: ${nomeTel}<br>\nSLA do evento: ${sla}<br>\nObs.: ${obs}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "cire") {
+        const solicitante = document.getElementById("cire_solicitante").value;
+        const contato = document.querySelector("input[name='cire_contato']:checked")?.value || "";
+        const motivo = document.getElementById("cire_motivo").value;
+        const info = document.getElementById("cire_info").value;
+        const previsao = document.getElementById("cire_previsao").value;
+        stamp = `INTERVENÇÃO CIRE<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+Solicitante: ${solicitante}<br>\nMeio de contato: ${contato}<br>\nMotivo: ${motivo}<br>\nInformação: ${info}<br>\nPrevisão: ${previsao}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "escalonamento") {
+        const cargo = document.getElementById("escalonamento_cargo").value;
+        const nomeTel = document.getElementById("escalonamento_nome_tel").value;
+        const sla = document.getElementById("escalonamento_sla").value;
+        const obs = document.getElementById("escalonamento_obs").value;
+        stamp = `ESCALONAMENTO SEM EQUIPE<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+Cargo: ${cargo}<br>\nNome/Tel.: ${nomeTel}<br>\nSLA do evento: ${sla}<br>\nObs.: ${obs}<br>\nAnalista CCR: ${analistaCCR}`.trim();
+      } else if (tipo === "cto_defeito") {
+        const site = document.getElementById("cto_defeito_site").value;
+        const splitter = document.getElementById("cto_defeito_splitter").value;
+        const caixa = document.getElementById("cto_defeito_caixa").value;
+        const endereco = document.getElementById("cto_defeito_endereco").value;
+        const causa = document.getElementById("cto_defeito_causa").value;
+        const tratativa = document.getElementById("cto_defeito_tratativa").value;
+        const material = document.getElementById("cto_defeito_material").value;
+        stamp = `CTO COM DEFEITO<br>
+<br>
+ID Ocorrência: ${idOcorrencia}<br>
+SUPERVISOR: ${supervisor}<br>\nTelefone: ${supervisorTel}<br>
+TÉCNICO: ${tecnico}<br>\nTelefone: ${tecnicoTel}<br>
+Nome SITE/ARO: ${site}<br>\nSplitter: ${splitter}<br>\nCaixa: ${caixa}<br>\nEndereço: ${endereco}<br>\nCausa: ${causa}<br>
+Tratativa realizada: ${tratativa}<br>\nMaterial utilizado: ${material}<br>
+Analista CCR: ${analistaCCR}`.trim();
+      }
+
+      document.getElementById("outputText").textContent = stamp;
+      document.getElementById("output").classList.add("active");
+      document.getElementById("output").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function copyToClipboard() {
+      const outputText = document.getElementById("outputText").textContent;
+      navigator.clipboard.writeText(outputText).then(() => {
+        const msg = document.getElementById("successMessage");
+        msg.classList.add("show");
+        setTimeout(() => msg.classList.remove("show"), 3000);
+      }).catch(err => alert("Erro ao copiar: " + err));
+    }
+
+    function sendToWhatsApp() {
+      const outputText = document.getElementById("outputText").textContent;
+      if (!outputText.trim()) {
+        alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
+        return;
+      }
+      const encodedText = encodeURIComponent(outputText);
+      window.open("https://wa.me/?text=" + encodedText, "_blank");
+    }
+  </script>
 </body>
 </html>

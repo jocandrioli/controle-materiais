@@ -1,48 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gerador de Carimbo - Acionamento GPON</title>
-
   <style>
-    :root{
-      --primary:#003366; --primary-2:#004d99; --accent:#ff6600; --info:#0066cc;
-      --bg:#f5f5f5; --panel:#fafafa; --text:#333; --muted:#666; --border:#ddd; --border-2:#999;
-      --radius:8px;
-    }
+    :root{--primary:#003366;--primary-2:#004d99;--accent:#ff6600;--info:#0066cc;--bg:#f5f5f5;--panel:#fafafa;--text:#333;--muted:#666;--border:#ddd;--border-2:#999;--radius:8px}
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:Arial,sans-serif;background:var(--bg);padding:20px;line-height:1.6;color:var(--text)}
     .container{max-width:1000px;margin:0 auto;background:#fff;border-radius:var(--radius);box-shadow:0 2px 8px rgba(0,0,0,.1);overflow:hidden}
     .header{background:var(--primary);color:#fff;padding:20px;text-align:center}
     .header h1{font-size:24px;margin-bottom:5px}
     .header p{font-size:12px;opacity:.9}
-
     .header-section{background:#f9f9f9;padding:20px;border-bottom:2px solid var(--primary-2)}
     .header-section h2{color:var(--primary);font-size:16px;margin-bottom:15px}
-
     .section{margin-bottom:20px;padding:15px;border:1px solid var(--border);border-radius:4px;background:var(--panel)}
     .section-title{font-weight:700;color:var(--primary);margin-bottom:12px;font-size:14px;border-bottom:2px solid var(--accent);padding-bottom:8px}
-
     .dynamic-content{padding:20px}
     .dynamic-content .hint{color:var(--muted);text-align:center;padding:40px 20px}
-
     .form-group{margin-bottom:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .form-group.full{grid-template-columns:1fr}
     .form-group.three-col{grid-template-columns:1fr 1fr 1fr}
-
     label{display:block;font-size:12px;font-weight:700;margin-bottom:4px}
-    input[type="text"],input[type="tel"],input[type="number"],input[type="time"],textarea,select{
-      width:100%;padding:8px;border:1px solid var(--border-2);border-radius:4px;font-size:12px;font-family:Arial,sans-serif
-    }
+    input[type="text"],input[type="tel"],input[type="number"],input[type="time"],textarea,select{width:100%;padding:8px;border:1px solid var(--border-2);border-radius:4px;font-size:12px;font-family:Arial,sans-serif}
     textarea{resize:vertical;min-height:60px}
     input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);background:#fffef0}
-
     .checkbox-group{display:flex;gap:15px;margin-top:8px;flex-wrap:wrap}
     .checkbox-group label{display:inline-flex;align-items:center;margin-bottom:0;font-weight:600}
     .checkbox-group input{width:auto;margin-right:6px}
-
     .actions{display:flex;gap:10px;margin-top:20px;justify-content:space-between;flex-wrap:wrap}
     button{padding:10px 20px;font-size:12px;border:0;border-radius:4px;cursor:pointer;font-weight:700;transition:.3s}
     .btn-generate{background:var(--accent);color:#fff;flex:1;min-width:160px}
@@ -51,672 +36,396 @@
     .btn-clear:hover{background:#777}
     .btn-copy{background:var(--info);color:#fff;flex:1;min-width:160px}
     .btn-copy:hover{background:#0052a3}
-
     .output-section{margin:20px;padding:15px;background:#f0f0f0;border:1px solid var(--border);border-radius:4px;display:none}
     .output-section.active{display:block}
     .output-section h3{color:var(--primary);margin-bottom:10px;font-size:14px}
-    .output-text{
-      background:#fff;padding:12px;border:1px solid var(--border-2);border-radius:4px;
-      font-family:"Courier New",monospace;font-size:11px;line-height:1.6;max-height:300px;overflow-y:auto;
-      white-space:pre-wrap;word-break:break-word
-    }
+    .output-text{background:#fff;padding:12px;border:1px solid var(--border-2);border-radius:4px;font-family:"Courier New",monospace;font-size:11px;line-height:1.6;max-height:300px;overflow-y:auto;white-space:pre-wrap;word-break:break-word}
     .success-message{background:#d4edda;color:#155724;padding:10px;border-radius:4px;margin-top:10px;font-size:12px;display:none}
     .success-message.show{display:block}
-
-    .divider{height:1px;background:var(--border);margin:10px 0}
     .mini{font-size:11px;color:var(--muted)}
-
-    @media (max-width:768px){
-      .form-group{grid-template-columns:1fr}
-      .form-group.three-col{grid-template-columns:1fr}
-      .actions{flex-direction:column}
-      button{width:100%}
-    }
+    .tags-wrap{border:1px solid var(--border-2);border-radius:4px;padding:6px;background:#fff}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+    .chip{background:#e8f0fe;border:1px solid #b6c8ff;color:#1a3b8f;padding:4px 8px;border-radius:999px;display:inline-flex;gap:8px;align-items:center;font-size:12px}
+    .chip button{border:0;background:transparent;cursor:pointer;font-weight:700;color:#1a3b8f;padding:0;min-width:auto}
+    .tags-row{display:flex;gap:8px;align-items:center}
+    .tags-row input{border:1px solid var(--border);flex:1}
+    .tags-row .btn-add{padding:8px 10px;flex:0;background:var(--info)}
+    .materials-wrap{border:1px solid var(--border-2);border-radius:4px;padding:10px;background:#fff}
+    .materials-list{margin-bottom:12px;max-height:250px;overflow-y:auto}
+    .materials-list table{width:100%;border-collapse:collapse;font-size:12px}
+    .materials-list table th,.materials-list table td{border:1px solid var(--border);padding:6px;text-align:left}
+    .materials-list table th{background:#f0f0f0;font-weight:700}
+    .materials-add{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .materials-add select,.materials-add input{padding:8px;border:1px solid var(--border-2);border-radius:4px;font-size:12px}
+    .materials-add select{flex:1;min-width:200px}
+    .materials-add input[type="number"]{width:80px}
+    .materials-empty{color:var(--muted);padding:8px 0;font-size:12px}
+    @media (max-width:768px){.form-group{grid-template-columns:1fr}.form-group.three-col{grid-template-columns:1fr}.actions{flex-direction:column}button{width:100%}.tags-row{flex-direction:column;align-items:stretch}.tags-row .btn-add{width:100%}.materials-add{flex-direction:column;align-items:stretch}.materials-add select,.materials-add input{width:100%}}
   </style>
 </head>
-
 <body>
   <div class="container">
     <div class="header">
       <h1>📋 Gerador de Carimbo - RS-CAPITAL</h1>
       <p>Sistema de Acionamento - GPON - Vivo Rede</p>
     </div>
-
-    <!-- Base (sempre visível) -->
     <div class="header-section">
       <h2>Dados Gerais (Preenchidos para todos os carimbos)</h2>
       <div id="baseForm"></div>
       <div class="mini">* Campos específicos aparecem após selecionar o tipo de carimbo.</div>
     </div>
-
-    <!-- Formulário dinâmico (gerado por JSON) -->
     <div class="dynamic-content">
       <div id="dynamicRoot"></div>
     </div>
-
-    <!-- Saída -->
     <div id="output" class="output-section">
       <h3>Carimbo de Texto Gerado</h3>
       <div class="output-text" id="outputText"></div>
-
       <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
         <button class="btn-copy" id="btnCopy" type="button">Copiar para Área de Transferência</button>
         <button class="btn-copy" id="btnWhats" type="button" style="background:#25d366;">Enviar via WhatsApp</button>
       </div>
-
       <div class="success-message" id="successMessage">Texto copiado para a área de transferência!</div>
     </div>
   </div>
 
   <script>
-    /*****************************************************************
-     * SCHEMA (JSON) - EDITE AQUI
-     *****************************************************************/
-    const SCHEMA = {
-      app: {
-        title: "Gerador de Carimbo - RS-CAPITAL",
-        subtitle: "Sistema de Acionamento - GPON - Vivo Rede"
-      },
+const SCHEMA = {
+  app: { title: "Gerador de Carimbo - RS-CAPITAL", subtitle: "Sistema de Acionamento - GPON - Vivo Rede" },
+  lists: {
+    supervisors: [
+      { name: "Alexandre Ilha", phone: "(51) 99753-4576" },
+      { name: "Diego Jaworski", phone: "(51) 99670-7110" },
+      { name: "Diego Richter", phone: "(51) 99754-9214" },
+      { name: "Marcio Mendes", phone: "(51) 99589-2075" },
+      { name: "Mário Pereira", phone: "(51) 99837-8234" },
+      { name: "Rodrigo Duarte", phone: "(51) 99758-7793" },
+      { name: "Rodrigo Rosa", phone: "(51) 99840-6074" }
+    ],
+    analysts: ["CARINA DE FATIMA CHUQUEL","EDMILSON GARCIA RIEIRA","EDUARDA PAIVA RODRIGUES","JULIA DOS SANTOS DA SILVA","MATHEUS ALVES CASTRO","RAFAELA VERCH DIAS","SILVIO LUIZ RACHOR PUTRIQUE"],
+    technicians: ["Matheus da Silva Sanguine","Ismael Silva de Brito","Guilherme dos Santos Freitas","Vagner Lima Flores","Sergio klug","Marcelo Bohns Conforti","Luis Augusto Fagundes","Valdir Rafael Carmo de Almeida","Alexandre Moises Faleiro dos Santos","Rafael Bittencourt Marco","Pablo Josué da Rosa","Uilian de Souza Salgado","Mauricio Garcia Bairros","Oldonir Alexandre Alves da Silva","Carlos Davi Rodrigues da Silva","Marco Antonio Espindula","Luis Carlos Santana dos Santos","Alex Gomes Leandro Matzenbacher","Laerte Rodrigues da Silva","Cassiano Rodrigo Antunes da Silva","Marcio Abel Gonçalves dos Santos","Jair Santos Correia","Anderson Teodoro Correa","Neivo José da Rosa","Lucas de Paula Cordeiro","Robson Ribeiro da Silva","Luciano Mabilia","José Hamilton Oliveira Machado","Silvio Luiz Rachor Putrique","Vinicius de Souza Camponogara","Lindomar Antunes do Nascimento","Atilas Pedro Carvalho","Diego Machado Flores","Maicon da Silva Amorim","Carlos André de Souza","Ronaldo Ferreira Dutra","Luis Gustavo Veiga Ramos","Nairo Mirandolli","Antonio Claudio Velasco Callegari","João Carlos Cabral Marques","Jonatan Guilherme Santos","Marcelo de Souza Teixeira","Miguel Angelo Falkembach de Souza Machado","Gabriel Almeida Ziemer"],
+    sites: ["RSCBM_G1N01","RSCBM_O1A01","RSCQU_G1I01","RSGUB_G1N01","RSPAE_G1B95","RSPAE_G1C01","RSPAE_G1I22","RSPAE_G1I23","RSPAE_G1I24","RSPAE_G1I25","RSPAE_G1I26","RSPAE_G1I32","RSPAE_G1I33","RSPAE_G1I35","RSPAE_G1I41","RSPAE_G1I47","RSPAE_G1I48","RSPAE_G1I51","RSPAE_G1I55","RSPAE_G1I57","RSPAE_G1N42","RSPAE_G1N45","RSSLE_G1M01","RSSLE_O1A04"],
+    causes: ["Abalroamento","Furto","Acidente","Descarga","Vandalismo","Troca de poste","Degradação / Infiltração","Defeito Splitter","Falha em atividade anterior","Obra de terceiros","Interperie","Ataque de animais"],
+    materials: [
+      {id:"mat_0001",name:"ALÇA PREFORM P/ DROP ÓPT ASU ATÉ 12 FO",code:"0056-0003-0",unit:"un"},
+      {id:"mat_0002",name:"SPLITTER OPT. PASSIVO 1:8-10 DB-FTTH",code:"0192-0219-9",unit:"un"},
+      {id:"mat_0003",name:"KIT DERIVAÇÃO FIST-GCO DERIVAÇÃO RAYCHEM",code:"0219-0022-1",unit:"un"},
+      {id:"mat_0004",name:"ABRAÇ. AÇO INOX AUTO TRAVANTE S/PROT",code:"0219-0333-7",unit:"un"},
+      {id:"mat_0005",name:"LAÇO PRÉ-FORMADO LPF 4,8",code:"0256-0092-3",unit:"un"},
+      {id:"mat_0006",name:"DERIVAÇÃO T PRÉ-FORMADA P/CORDOALHA 6,4",code:"0256-0180-6",unit:"un"},
+      {id:"mat_0007",name:"LAÇO PREFORM P/ DROP ÓPT ASU ATÉ 12 FO",code:"0256-0234-9",unit:"un"},
+      {id:"mat_0008",name:"ALÇA PREF P/CFOA-SM-AS-80 de 18 a 36 fo",code:"0256-0243-5",unit:"un"},
+      {id:"mat_0009",name:"ALÇA PREF P/CFOA-SM-AS-80 de 48 a 72 fo",code:"0256-0244-6",unit:"un"},
+      {id:"mat_0010",name:"ALÇA PREF. P/ CORDOALHA DIELÉTRICA 6,4",code:"0380-9200-0",unit:"un"},
+      {id:"mat_0011",name:"CORDOALHA DIELÉTRICA 6,4",code:"0380-9201-1",unit:"m"},
+      {id:"mat_0012",name:"DERIVACAO PREF P CORD DIELETRICA 6,4",code:"0380-9202-2",unit:"un"},
+      {id:"mat_0013",name:"FIO DE ESPINAR DIELETRICO",code:"0380-9203-3",unit:"m"},
+      {id:"mat_0014",name:"LAÇO PREF. P/ CORDOALHA DIELÉTRICA 6,4",code:"0380-9204-4",unit:"un"},
+      {id:"mat_0015",name:"CABO OPTICO CFOA-SM AS 80 24F TS",code:"0452-0120-3",unit:"m"},
+      {id:"mat_0016",name:"KIT DERIV TERMOC CEO AEREO/SUBT FOSC100",code:"0460-0048-2",unit:"un"},
+      {id:"mat_0017",name:"CAIXA OPTICA 6 ADAPTADORES + PIGTAIL",code:"0486-0358-5",unit:"un"},
+      {id:"mat_0018",name:"CRUZETA P RESERVA TÉCNICA FO POSTE 300mm",code:"0254-0061-4",unit:"un"},
+      {id:"mat_0019",name:"SUP ANCORAGEM CABO OPT AS E CORD DIELETR",code:"0456-0157-7",unit:"un"},
+      {id:"mat_0020",name:"SUP PASSAGEM CABO OPT AS E CORD DIELETR",code:"0456-0158-8",unit:"un"},
+      {id:"mat_0021",name:"LAÇO PREF P/CFOA-SM-AS-80 DE 18 A 36 FO",code:"0456-0160-0",unit:"un"},
+      {id:"mat_0022",name:"LAÇO PREF P/CFOA-SM-AS-80 DE 48 A 72 FO",code:"0456-0161-1",unit:"un"},
+      {id:"mat_0023",name:"LAÇO PREF P/CFOA-SM-AS-80 DE 144 FO",code:"0456-0162-2",unit:"un"},
+      {id:"mat_0024",name:"CTOPS 1:2 + 1:8 PRE-C SELADA - 70/30 OPT",code:"0380-9207-7",unit:"un"},
+      {id:"mat_0025",name:"CTOPS 1:2 + 1:8 PRE-C SELADA - 80/20 FC",code:"0380-9213-3",unit:"un"},
+      {id:"mat_0026",name:"CTOPS 1:2 + 1:8 PRE-C SELADA 90/10 FC",code:"0380-9215-5",unit:"un"},
+      {id:"mat_0027",name:"CTOPS 1:2 + 1:8 PRE-C SELADA - 85/15 FC",code:"0380-9214-4",unit:"un"},
+      {id:"mat_0028",name:"CTOPS 1:8 PRECONECTORIZADA SELADA FC",code:"0256-0343-3",unit:"un"},
+      {id:"mat_0029",name:"CTOPS 1:2 + 1:8 PRE-C SELADA - 60/40 FC",code:"0380-9211-1",unit:"un"},
+      {id:"mat_0030",name:"CTOPS 1:2 + 1:8 PRE-C SELADA - 70/30 FC",code:"0380-9212-2",unit:"un"},
+      {id:"mat_0031",name:"MINI CDOE 1:8 ENTRADA E SAÍDA PRECON",code:"0186-0100-2",unit:"un"},
+      {id:"mat_0032",name:"MINI CDOE 1:2 + 1:8 PRECON SELADA 85/15",code:"0186-0099-8",unit:"un"},
+      {id:"mat_0033",name:"MINI CDOE 1:2 + 1:8 PRECON SELADA 80/20",code:"0186-0099-9",unit:"un"},
+      {id:"mat_0034",name:"MINI CDOE 1:2 + 1:8 PRECON SELADA 90/10",code:"0186-0100-0",unit:"un"},
+      {id:"mat_0035",name:"MINI CDOE 1:2 + 1:8 PRECON SELADA 60/40",code:"0186-0097-7",unit:"un"},
+      {id:"mat_0036",name:"MINI CDOE 1:2 + 1:8 PRECON SELADA 70/30",code:"0186-0098-8",unit:"un"},
+      {id:"mat_0037",name:"BRAÇADEIRA REGULÁVEL POSTE BAP-3",code:"0256-0073-7",unit:"un"},
+      {id:"mat_0038",name:"ANEL DE DISTRIBUICAO EM ACO AGFS",code:"0230-0204-7",unit:"un"},
+      {id:"mat_0039",name:"BRAÇADEIRA REGULÁVEL POSTE BAP-2",code:"0256-0072-9",unit:"un"},
+      {id:"mat_0040",name:"ALÇA PLASTICA PARA ANCORAGEM CFOA 5MM",code:"0380-9220-0",unit:"un"},
+      {id:"mat_0041",name:"SUPORTE UNIVERSAL PARA CAIXA BARRAMENTO",code:"0460-0069-9",unit:"un"},
+      {id:"mat_0042",name:"PLAQUETA DE IDENTIFICAÇÃO PARA CABO ÓPTI",code:"0840-2667-7",unit:"un"},
+      {id:"mat_0043",name:"CARACTER ADESIVO 15MM ALGARISMOS 0-9",code:"9001-1358-8",unit:"plc"},
+      {id:"mat_0044",name:"CARACTER ADESIVO 15MM ALFABETO A-N",code:"9001-1360-0",unit:"plc"},
+      {id:"mat_0045",name:"CHAPA MEIO DE VAO",code:"0230-0232-5",unit:"un"},
+      {id:"mat_0046",name:"DROP OPTICO AS CM AR FIG8 LSZH - 4F",code:"0380-9221-1",unit:"m"},
+      {id:"mat_0047",name:"CABO DROP CIRCULAR 5 MM 12 FIBRAS",code:"0452-1257-7",unit:"m"},
+      {id:"mat_0048",name:"MINI-CEO TERMOC 16ENT AEREO E SUBT 144FO",code:"0456-0170-0",unit:"un"},
+      {id:"mat_0049",name:"CONJ EMENDA OPT MEC AER SUBT - 48F 4ENT",code:"0456-0169-9",unit:"un"},
+      {id:"mat_0050",name:"CONJ EMENDA OPT MEC AER SUBT - 72F 4ENT",code:"0456-0172-2",unit:"un"},
+      {id:"mat_0051",name:"CABO DROP CIRCULAR 12 FIBRAS - 100M",code:"0452-1258-8",unit:"un"},
+      {id:"mat_0052",name:"CABO DROP CIRCULAR 12 FIBRAS - 500M",code:"0452-1264-4",unit:"un"},
+      {id:"mat_0053",name:"CABO DROP CIRCULAR 12 FIBRAS - 150M",code:"0452-1259-9",unit:"un"},
+      {id:"mat_0054",name:"CABO DROP CIRCULAR 12 FIBRAS - 200M",code:"0452-1260-0",unit:"un"},
+      {id:"mat_0055",name:"CABO DROP CIRCULAR 12 FIBRAS - 250M",code:"0452-1261-1",unit:"un"},
+      {id:"mat_0056",name:"CABO DROP CIRCULAR 12 FIBRAS - 300M",code:"0452-1262-2",unit:"un"},
+      {id:"mat_0057",name:"CABO DROP CIRCULAR 12 FIBRAS - 400M",code:"0452-1263-3",unit:"un"},
+      {id:"mat_0058",name:"CABO DROP CIRCULAR 24 FIBRAS - 100M",code:"0452-1280-0",unit:"un"},
+      {id:"mat_0059",name:"ALÇA PLASTIC ATE 6,3MM C/GANCHO METALICO",code:"0380-9242-2",unit:"un"},
+      {id:"mat_0060",name:"CAIXA EMENDA PRECON SELADA 12 FIBRAS",code:"0456-0184-4",unit:"un"},
+      {id:"mat_0061",name:"CDPS 2 SP1:8 CAIXA DERIV PRE-C SPLIT",code:"0460-0072-2",unit:"un"},
+      {id:"mat_0062",name:"CDPS SP1:8 CAIXA DERIV PRE-C SPLIT",code:"0460-0074-4",unit:"un"},
+      {id:"mat_0063",name:"CDPS SP1:4 CAIXA DERIV PRE-C SPLIT",code:"0460-0080-0",unit:"un"},
+      {id:"mat_0064",name:"CDPS 4 SP1:4 CAIXA DERIV PRE-C SPLIT",code:"0460-0078-8",unit:"un"},
+      {id:"mat_0065",name:"CDPS 2 SP1:4 CAIXA DERIV PRE-C SPLIT",code:"0460-0079-9",unit:"un"},
+      {id:"mat_0066",name:"CONJ. SUP. CABOS OPT MEIO DE VAO RAQUETE",code:"0460-0084-4",unit:"un"},
+      {id:"mat_0067",name:"DROP OPT PREC 2PTAS FIG8 UNIV 100M PRET",code:"0380-9263-3",unit:"un"},
+      {id:"mat_0068",name:"DROP OPT PREC 2PTAS FIG8 UNIV 150M PRET",code:"0380-9264-4",unit:"un"},
+      {id:"mat_0069",name:"DROP OPT PREC 2PTAS FIG8 UNIV 200M PRET",code:"0380-9265-5",unit:"un"},
+      {id:"mat_0070",name:"DROP OPT PREC 2PTAS FIG8 UNIV 300M PRET",code:"0380-9266-6",unit:"un"},
+      {id:"mat_0071",name:"DROP OPT PREC 2PTAS FIG8 UNIV 400M PRET",code:"0380-9267-7",unit:"un"},
+      {id:"mat_0072",name:"FITA PARA ROTULADORA ELETRONICA (PT80)",code:"0378-1565-0",unit:"rolo"},
+      {id:"mat_0073",name:"ADAPTADOR REF UNIV P DROP COMPACTO FIG8",code:"0380-9259-9",unit:"un"},
+      {id:"mat_0074",name:"FIO DE ESPINAR ISOLADO PARA AGRUPADOR",code:"0380-9291-0",unit:"m"},
+      {id:"mat_0075",name:"LAÇO PREF P/ CABO DROP ALT. CAP ATE 48",code:"0380-9294-0",unit:"un"},
+      {id:"mat_0076",name:"ALÇA PREF P/ CABO DROP ALT. CAP ATE 48",code:"0380-9295-0",unit:"un"},
+      {id:"mat_0077",name:"CUNHA PLÁST P/ DROP ÓPT ROC/FIG8 REDEXT",code:"0099-0119-0",unit:"un"},
+      {id:"mat_0078",name:"CONECT OPT FAC SC/APC FIG8 COMPAC REDEXT",code:"0380-9292-0",unit:"un"},
+      {id:"mat_0079",name:"DROP OPT COMP INTERNO CFOI REDEXT",code:"0380-9293-0",unit:"un"},
+      {id:"mat_0080",name:"PONTO TERMINAL DE REDE-ÓPTICO REDEXT",code:"0258-0397-0",unit:"un"},
+      {id:"mat_0081",name:"TUBO ISOLADOR MENSAGEIRO TIM 4,8MM",code:"0430-0018-0",unit:"m"},
+      {id:"mat_0082",name:"TUBO ISOLADOR MENSAGEIRO TIM 6,4MM",code:"0430-0019-0",unit:"m"},
+      {id:"mat_0083",name:"ALÇA PREFORMADA PARA DROP FIG8",code:"0380-9296-0",unit:"un"},
+      {id:"mat_0084",name:"LAÇO PREFORMADO PARA DROP FIG8",code:"0380-9297-0",unit:"un"},
+      {id:"mat_0085",name:"SUP ENCAIXE UNIFICADO 04 ROLD (TIPO DM)",code:"0456-0201-0",unit:"un"},
+      {id:"mat_0086",name:"SPIRAL TUBE 1/2 LARANJA",code:"0254-0082-7",unit:"m"},
+      {id:"mat_0087",name:"DUTO P PROTEÇÃO PARA CABOS EM REDE AEREA",code:"0430-0017-7",unit:"m"},
+      {id:"mat_0088",name:"CABO DROP ALTA CAPACID. 24 FIBRAS S/MPO",code:"0452-1331-0",unit:"m"},
+      {id:"mat_0089",name:"CABO DROP ALTA CAPACID. 36 FIBRAS S/MPO",code:"0452-1332-0",unit:"m"},
+      {id:"mat_0090",name:"CABO DROP ALTA CAPACID. 144 FIBRAS S/MPO",code:"0452-1373-0",unit:"m"},
+      {id:"mat_0091",name:"Protetor Ref p/ Conec Campo CDOE (NOVA)",code:"0458-0014-0",unit:"un"},
+      {id:"mat_0092",name:"CABO DROP ALTA CAPACID. 72 FIBRAS S/MPO",code:"0452-1333-0",unit:"m"},
+      {id:"mat_0093",name:"Protetor p/ Conec Reforçado de Campo",code:"0458-0015-0",unit:"un"},
+      {id:"mat_0094",name:"ALÇA PREF P/ CABO DROP ALT. CAP. 72FO",code:"0256-0367-0",unit:"un"},
+      {id:"mat_0095",name:"ALÇA PREF P/ CABO DROP ALT. CAP 144FO",code:"0256-0368-0",unit:"un"}
+    ]
+  },
+  baseFields: [
+    {id:"id_ocorrencia",label:"ID Ocorrência/OS CTO (BA/TT)",type:"text",placeholder:"Ex: 123456",group:"two"},
+    {id:"carimbo_tipo",label:"Selecione o Tipo de Carimbo",type:"select",optionsFrom:"types",group:"two"},
+    {id:"supervisor",label:"SUPERVISOR",type:"datalist",listId:"supervisorList",listFrom:"supervisors",placeholder:"Nome do Supervisor",group:"two"},
+    {id:"supervisor_tel",label:"Telefone Supervisor",type:"tel",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
+    {id:"tecnicos",label:"TÉCNICO(S)",type:"tags",listId:"tecnicoList",listFrom:"technicians",placeholder:"Comece a digitar para pesquisar",group:"two"},
+    {id:"tecnico_tel",label:"Telefone Técnico",type:"tel",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
+    {id:"analista_ccr",label:"Analista CCR",type:"datalist",listId:"analistaList",listFrom:"analysts",placeholder:"Digite para pesquisar ou selecione na lista",group:"full"}
+  ],
+  types: [
+    {id:"acionamento",label:"1. Acionamento",title:"ACIONAMENTO",fields:[{id:"acionamento_prev_chegada",label:"Previsão de chegada ao SITE/ARO para medições",type:"time",group:"two"},{id:"acionamento_site",label:"Nome SITE/ARO para medições",type:"datalist",listId:"siteList",listFrom:"sites",placeholder:"Digite para pesquisar ou selecione na lista",group:"two"}],stamp:(d)=>["1 – ACIONAMENTO","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Previsão de chegada ao SITE/ARO para medições: ${d.acionamento_prev_chegada}`,`Nome SITE/ARO para medições: ${d.acionamento_site}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"deslocamento",label:"2. Deslocamento ao Ponto da Falha",title:"DESLOCAMENTO AO PONTO DA FALHA",fields:[{id:"deslocamento_km",label:"KM até o LOCAL da falha",type:"number",step:"0.1",placeholder:"Ex: 15.5",group:"two"},{id:"deslocamento_prev_chegada",label:"Previsão de chegada ao LOCAL da falha",type:"time",group:"two"},{id:"deslocamento_obs",label:"Observações",type:"textarea",placeholder:"Observações sobre o deslocamento",group:"full"}],stamp:(d)=>["2 – DESLOCAMENTO AO PONTO DA FALHA","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`KM até o LOCAL da falha: ${d.deslocamento_km} km`,`Previsão de chegada ao LOCAL da falha: ${d.deslocamento_prev_chegada}`,`Obs.: ${d.deslocamento_obs}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"recuperacao",label:"3. Recuperação da Falha",title:"RECUPERAÇÃO DA FALHA",fields:[{id:"recuperacao_causa",label:"Causa raiz",type:"select",optionsFrom:"causes",group:"two"},{id:"recuperacao_prev_testes",label:"Previsão para solicitação de testes",type:"time",group:"two"},{id:"recuperacao_endereco",label:"Endereço da falha",type:"text",placeholder:"Rua, Número, Complemento",group:"two"},{id:"recuperacao_cabo",label:"Cabo / Capacidade / ARO",type:"text",placeholder:"Ex: DROP 4F, 12F, 24F, 36F, 48F, 72F, 144F",group:"two"},{id:"recuperacao_tratativas",label:"Tratativas realizadas",type:"textarea",placeholder:"Descreva as tratativas",group:"full"},{id:"recuperacao_obs",label:"Observações",type:"textarea",placeholder:"Observações gerais",group:"full"}],stamp:(d)=>["3 – RECUPERAÇÃO DA FALHA","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Causa raiz: ${d.recuperacao_causa}`,`Previsão para solicitação de testes: ${d.recuperacao_prev_testes}`,`Endereço da falha: ${d.recuperacao_endereco}`,`Cabo/Capacidade/ARO: ${d.recuperacao_cabo}`,`Tratativas realizadas: ${d.recuperacao_tratativas}`,`Obs.: ${d.recuperacao_obs}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"certificacao",label:"4. Certificação",title:"SOLICITAÇÃO DE CERTIFICAÇÃO",fields:[{id:"certificacao_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descrição da tratativa realizada",group:"full"},{id:"certificacao_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},{id:"certificacao_material",label:"Materiais Utilizados",type:"materials",group:"full"},{id:"certificacao_foto",label:"Foto em anexo",type:"radio",name:"certificacao_foto",options:["Sim","Não"],group:"full"}],stamp:(d)=>{const materials=JSON.parse(d.certificacao_material||"[]");const materialText=materials.length>0?"Materiais utilizados:\n"+materials.map(m=>`  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`).join("\n"):"Nenhum material registrado";return["4 – SOLICITAÇÃO DE CERTIFICAÇÃO","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Tratativa realizada: ${d.certificacao_tratativa}`,`Causa: ${d.certificacao_causa}`,materialText,`Foto em anexo: ${d.certificacao_foto}`,`Analista CCR: ${d.analista_ccr}`]}},
+    {id:"complementar",label:"Complementar",title:"COMPLEMENTAR",fields:[{id:"complementar_motivo",label:"Motivo",type:"text",placeholder:"Motivo da complementação",group:"two"},{id:"complementar_info",label:"Informação",type:"text",placeholder:"Informação adicional",group:"two"},{id:"nova_previsao",label:"Nova previsão?",type:"radio",name:"nova_previsao",options:["Sim","Não"],group:"two"},{id:"complementar_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["COMPLEMENTAR","",`ID Ocorrência: ${d.id_ocorrencia}`,`Motivo: ${d.complementar_motivo}`,`Informação: ${d.complementar_info}`,`Nova previsão? ${d.nova_previsao}`,`Previsão: ${d.complementar_previsao}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"naofalha",label:"Não há Falha para Rede",title:"NÃO HÁ FALHA PARA REDE",fields:[{id:"naofalha_motivo",label:"Motivo da Improdutiva",type:"textarea",placeholder:"Descreva o motivo da improdutiva",group:"full"},{id:"naofalha_foto",label:"Foto em anexo",type:"radio",name:"naofalha_foto",options:["Sim","Não"],group:"two"},{id:"naofalha_gestor",label:"Ciente (Gestor VIVO Rede)",type:"text",value:"João Andrioli",readonly:true,group:"two"}],stamp:(d)=>["NÃO HÁ FALHA PARA REDE","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Motivo da improdutiva: ${d.naofalha_motivo}`,`Foto em anexo: ${d.naofalha_foto}`,`Ciente (Gestor VIVO Rede): ${d.naofalha_gestor}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"transbordo",label:"Transbordo",title:"TRANSBORDO",fields:[{id:"transbordota",label:"TA",type:"text",placeholder:"TA",group:"two"},{id:"transbordocontrato",label:"CONTRATO",type:"text",placeholder:"Contrato",group:"two"},{id:"transbordooperadora",label:"TRANSBORDO",type:"text",value:"VIVO",readonly:true,group:"two"}],stamp:(d)=>["TRANSBORDO","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`TA: ${d.transbordota}`,`CONTRATO: ${d.transbordocontrato}`,`TRANSBORDO: ${d.transbordooperadora}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"prazo",label:"Prazo de Reparo",title:"PRAZO DE REPARO",fields:[{id:"prazoreparocargo",label:"Cargo",type:"text",value:"Coordenador",readonly:true,group:"two"},{id:"prazoreparonometel",label:"Nome / Telefone",type:"text",value:"João Andrioli / 41 99244-9441",readonly:true,group:"two"},{id:"prazoreparosla",label:"SLA do evento",type:"text",placeholder:"Ex: 4h, 2h",group:"two"},{id:"prazoreparoobs",label:"Observações",type:"text",placeholder:"Observações",group:"two"}],stamp:(d)=>["ESCALONAMENTO PRAZO REPARO","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Cargo: ${d.prazoreparocargo}`,`Nome/Tel.: ${d.prazoreparonometel}`,`SLA do evento: ${d.prazoreparosla}`,`Obs.: ${d.prazoreparoobs}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"cire",label:"CIRE",title:"INTERVENÇÃO CIRE",fields:[{id:"cire_solicitante",label:"Solicitante",type:"text",placeholder:"Nome do Solicitante",group:"two"},{id:"cire_contato",label:"Meio de contato",type:"radio",name:"cire_contato",options:["Telefone","E-mail","WhatsApp"],group:"two"},{id:"cire_motivo",label:"Motivo",type:"textarea",placeholder:"Descreva o motivo da intervenção CIRE",group:"full"},{id:"cire_info",label:"Informação",type:"textarea",placeholder:"Informações adicionais",group:"full"},{id:"cire_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["INTERVENÇÃO CIRE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Solicitante: ${d.cire_solicitante}`,`Meio de contato: ${d.cire_contato}`,`Motivo: ${d.cire_motivo}`,`Informação: ${d.cire_info}`,`Previsão: ${d.cire_previsao}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"escalonamento",label:"Escalonamento sem Equipe",title:"ESCALONAMENTO SEM EQUIPE",fields:[{id:"escalonamento_cargo",label:"Cargo",type:"text",value:"Coordenador",readonly:true,group:"two"},{id:"escalonamento_nome_tel",label:"Nome / Telefone",type:"text",value:"João Andrioli / 41 99244-9441",readonly:true,group:"two"},{id:"escalonamento_sla",label:"SLA do evento",type:"text",placeholder:"Ex: 4h, 2h",group:"two"},{id:"escalonamento_obs",label:"Observações",type:"text",placeholder:"Observações",group:"two"}],stamp:(d)=>["ESCALONAMENTO SEM EQUIPE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Cargo: ${d.escalonamento_cargo}`,`Nome/Tel.: ${d.escalonamento_nome_tel}`,`SLA do evento: ${d.escalonamento_sla}`,`Obs.: ${d.escalonamento_obs}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"cto_defeito",label:"CTO com Defeito",title:"CTO COM DEFEITO",fields:[{id:"cto_defeito_site",label:"Nome SITE/ARO",type:"datalist",listId:"siteList",listFrom:"sites",placeholder:"Digite para pesquisar ou selecione na lista",group:"two"},{id:"cto_defeito_splitter",label:"Splitter",type:"text",placeholder:"Ex: SP001, SP144",group:"two"},{id:"cto_defeito_caixa",label:"Caixa",type:"text",placeholder:"Ex: G0001, G0099, GP0050",group:"two"},{id:"cto_defeito_endereco",label:"Endereço",type:"text",placeholder:"Rua, Número, Complemento",group:"two"},{id:"cto_defeito_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},{id:"cto_defeito_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descreva a tratativa realizada",group:"full"},{id:"cto_defeito_material",label:"Materiais Utilizados",type:"materials",group:"full"}],stamp:(d)=>{const materials=JSON.parse(d.cto_defeito_material||"[]");const materialText=materials.length>0?"Materiais utilizados:\n"+materials.map(m=>`  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`).join("\n"):"Nenhum material registrado";return["CTO COM DEFEITO","",`ID Ocorrência: ${d.id_ocorrencia}`,`SUPERVISOR: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`TÉCNICO(S): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Nome SITE/ARO: ${d.cto_defeito_site}`,`Splitter: ${d.cto_defeito_splitter}`,`Caixa: ${d.cto_defeito_caixa}`,`Endereço: ${d.cto_defeito_endereco}`,`Causa: ${d.cto_defeito_causa}`,`Tratativa realizada: ${d.cto_defeito_tratativa}`,materialText,`Analista CCR: ${d.analista_ccr}`]}}
+  ]
+};
 
-      lists: {
-        supervisors: [
-          { name: "Alexandre Ilha", phone: "(51) 99753-4576" },
-          { name: "Diego Jaworski",  phone: "(51) 99670-7110" },
-          { name: "Diego Richter",   phone: "(51) 99754-9214" },
-          { name: "Marcio Mendes",   phone: "(51) 99589-2075" },
-          { name: "Mário Pereira",   phone: "(51) 99837-8234" },
-          { name: "Rodrigo Duarte",  phone: "(51) 99758-7793" },
-          { name: "Rodrigo Rosa",    phone: "(51) 99840-6074" }
-        ],
-        analysts: [
-          "CARINA DE FATIMA CHUQUEL",
-          "EDMILSON GARCIA RIEIRA",
-          "EDUARDA PAIVA RODRIGUES",
-          "JULIA DOS SANTOS DA SILVA",
-          "MATHEUS ALVES CASTRO",
-          "RAFAELA VERCH DIAS",
-          "SILVIO LUIZ RACHOR PUTRIQUE"
-        ],
-        sites: [
-          "RSCBM_G1N01","RSCBM_O1A01","RSCQU_G1I01","RSGUB_G1N01","RSPAE_G1B95","RSPAE_G1C01",
-          "RSPAE_G1I22","RSPAE_G1I23","RSPAE_G1I24","RSPAE_G1I25","RSPAE_G1I26","RSPAE_G1I32",
-          "RSPAE_G1I33","RSPAE_G1I35","RSPAE_G1I41","RSPAE_G1I47","RSPAE_G1I48","RSPAE_G1I51",
-          "RSPAE_G1I55","RSPAE_G1I57","RSPAE_G1N42","RSPAE_G1N45","RSSLE_G1M01","RSSLE_O1A04"
-        ],
-        causes: [
-          "Abalroamento","Furto","Acidente","Descarga","Vandalismo","Troca de poste",
-          "Degradação / Infiltração","Defeito Splitter","Falha em atividade anterior",
-          "Obra de terceiros","Interperie","Ataque de animais"
-        ]
-      },
+const $ = (id) => document.getElementById(id);
+const normalizeName = (str) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const supervisorPhones = Object.fromEntries(SCHEMA.lists.supervisors.map(s => [normalizeName(s.name), s.phone]));
 
-      baseFields: [
-        { id: "id_ocorrencia", label: "ID Ocorrência/OS CTO (BA/TT)", type: "text", placeholder: "Ex: 123456", group: "two" },
+function escapeHtml(s) {
+  return String(s ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+}
 
-        {
-          id: "carimbo_tipo",
-          label: "Selecione o Tipo de Carimbo",
-          type: "select",
-          optionsFrom: "types",   // preenchido automaticamente com base em types abaixo
-          group: "two"
-        },
+function buildDatalist(id, values) {
+  let dl = $(id);
+  if (!dl) { dl = document.createElement("datalist"); dl.id = id; document.body.appendChild(dl); }
+  dl.innerHTML = values.map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
+}
 
-        { id: "supervisor", label: "SUPERVISOR", type: "datalist", listId: "supervisorList", listFrom: "supervisors", placeholder: "Nome do Supervisor", group: "two" },
-        { id: "supervisor_tel", label: "Telefone Supervisor", type: "tel", placeholder: "(51) 9XXXX-XXXX", inputmode: "tel", group: "two" },
+function groupClass(group) { return group === "full" ? "form-group full" : group === "three" ? "form-group three-col" : "form-group"; }
 
-        { id: "tecnico", label: "TÉCNICO", type: "text", placeholder: "Nome do Técnico", group: "two" },
-        { id: "tecnico_tel", label: "Telefone Técnico", type: "tel", placeholder: "(51) 9XXXX-XXXX", inputmode: "tel", group: "two" },
+function renderField(field) {
+  const { id, label, type, placeholder, value, readonly, inputmode, step, listId, listFrom, options, optionsFrom, name } = field;
+  const safeLabel = escapeHtml(label || ""), safeId = escapeHtml(id || ""), ro = readonly ? "readonly" : "", im = inputmode ? `inputmode="${escapeHtml(inputmode)}"` : "", st = step ? `step="${escapeHtml(step)}"` : "", ph = placeholder ? `placeholder="${escapeHtml(placeholder)}"` : "", val = (value !== undefined && value !== null) ? `value="${escapeHtml(value)}"` : "";
 
-        { id: "analista_ccr", label: "Analista CCR", type: "datalist", listId: "analistaList", listFrom: "analysts", placeholder: "Digite para pesquisar ou selecione na lista", group: "full" }
-      ],
+  if (type === "textarea") return `<div><label for="${safeId}">${safeLabel}</label><textarea id="${safeId}" ${ph} ${ro}>${escapeHtml(value ?? "")}</textarea></div>`;
+  if (type === "select") {
+    const opts = optionsFrom ? (optionsFrom === "types" ? SCHEMA.types.map(t => ({ value: t.id, text: t.label })) : (SCHEMA.lists[optionsFrom] || []).map(v => ({ value: v, text: v }))) : (options || []).map(v => ({ value: v, text: v }));
+    const first = (id === "carimbo_tipo") ? `<option value="">-- Selecione --</option>` : `<option value="" disabled selected>Selecione</option>`;
+    return `<div><label for="${safeId}">${safeLabel}</label><select id="${safeId}">${first}${opts.map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.text)}</option>`).join("")}</select></div>`;
+  }
+  if (type === "radio") {
+    const radioName = name || id, opts = (options || []);
+    return `<div><label>${safeLabel}</label><div class="checkbox-group">${opts.map(opt => {const v = escapeHtml(opt); return `<label><input type="radio" name="${escapeHtml(radioName)}" value="${v}"> ${v}</label>`}).join("")}</div></div>`;
+  }
+  if (type === "datalist") {
+    const values = (listFrom === "supervisors") ? SCHEMA.lists.supervisors.map(s => s.name) : (SCHEMA.lists[listFrom] || []);
+    buildDatalist(listId, values);
+    return `<div><label for="${safeId}">${safeLabel}</label><input type="text" id="${safeId}" list="${escapeHtml(listId)}" ${ph} ${val} ${ro} /></div>`;
+  }
+  if (type === "tags") {
+    const values = (SCHEMA.lists[listFrom] || []);
+    buildDatalist(listId, values);
+    return `<div><label for="${safeId}_input">${safeLabel}</label><div class="tags-wrap" id="${safeId}_wrap"><div class="chips" id="${safeId}_chips"></div><div class="tags-row"><input type="text" id="${safeId}_input" list="${escapeHtml(listId)}" ${ph} /><button type="button" id="${safeId}_add" class="btn-copy btn-add">Adicionar</button></div></div><input type="hidden" id="${safeId}" value="" /></div>`;
+  }
+  if (type === "materials") {
+    const materialsData = SCHEMA.lists.materials || [];
+    const listId = `${id}_datalist`;
+    return `<div><label>${safeLabel}</label><div class="materials-wrap" id="${safeId}_wrap"><div class="materials-list" id="${safeId}_list"><p class="materials-empty">Nenhum material adicionado</p></div><div class="materials-add"><input type="text" id="${safeId}_search" list="${listId}" placeholder="Digite para buscar material..." style="flex:1;min-width:200px;padding:8px;border:1px solid var(--border-2);border-radius:4px;font-size:12px"><datalist id="${listId}">${materialsData.map(m => `<option value="${escapeHtml(m.name)}" data-unit="${escapeHtml(m.unit)}" data-code="${escapeHtml(m.code)}">${escapeHtml(m.code)} - ${escapeHtml(m.name)}</option>`).join("")}</datalist><input type="number" id="${safeId}_qty" placeholder="Qtd" min="0.1" step="0.1"><button type="button" id="${safeId}_add_btn" class="btn-copy btn-add">Adicionar</button></div></div><input type="hidden" id="${safeId}" value="[]" /></div>`;
+  }
+  const inputType = escapeHtml(type || "text");
+  return `<div><label for="${safeId}">${safeLabel}</label><input type="${inputType}" id="${safeId}" ${ph} ${val} ${ro} ${im} ${st} /></div>`;
+}
 
-      // Tipos (cada item gera a seção e o carimbo)
-      types: [
-        {
-          id: "acionamento",
-          label: "1. Acionamento",
-          title: "ACIONAMENTO",
-          fields: [
-            { id: "acionamento_prev_chegada", label: "Previsão de chegada ao SITE/ARO para medições", type: "time", group: "two" },
-            { id: "acionamento_site", label: "Nome SITE/ARO para medições", type: "datalist", listId: "siteList", listFrom: "sites", placeholder: "Digite para pesquisar ou selecione na lista", group: "two" }
-          ],
-          stamp: (d) => [
-            "1 – ACIONAMENTO", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `Previsão de chegada ao SITE/ARO para medições: ${d.acionamento_prev_chegada}`,
-            `Nome SITE/ARO para medições: ${d.acionamento_site}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function renderForm(fields) {
+  const rows = []; let buffer = []; let currentGroup = null;
+  function flush(group) { if (!buffer.length) return; rows.push(`<div class="${groupClass(group)}">${buffer.join("")}</div>`); buffer = []; }
+  for (const f of fields) {
+    const g = f.group || "two";
+    if (currentGroup === null) currentGroup = g;
+    if (g !== currentGroup) { flush(currentGroup); currentGroup = g; }
+    buffer.push(renderField(f));
+  }
+  flush(currentGroup);
+  return rows.join("");
+}
 
-        {
-          id: "deslocamento",
-          label: "2. Deslocamento ao Ponto da Falha",
-          title: "DESLOCAMENTO AO PONTO DA FALHA",
-          fields: [
-            { id: "deslocamento_km", label: "KM até o LOCAL da falha", type: "number", step: "0.1", placeholder: "Ex: 15.5", group: "two" },
-            { id: "deslocamento_prev_chegada", label: "Previsão de chegada ao LOCAL da falha", type: "time", group: "two" },
-            { id: "deslocamento_obs", label: "Observações", type: "textarea", placeholder: "Observações sobre o deslocamento", group: "full" }
-          ],
-          stamp: (d) => [
-            "2 – DESLOCAMENTO AO PONTO DA FALHA", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `KM até o LOCAL da falha: ${d.deslocamento_km} km`,
-            `Previsão de chegada ao LOCAL da falha: ${d.deslocamento_prev_chegada}`,
-            `Obs.: ${d.deslocamento_obs}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function getCheckedValue(name) { return document.querySelector(`input[name="${CSS.escape(name)}"]:checked`)?.value || ""; }
 
-        {
-          id: "recuperacao",
-          label: "3. Recuperação da Falha",
-          title: "RECUPERAÇÃO DA FALHA",
-          fields: [
-            { id: "recuperacao_causa", label: "Causa raiz", type: "select", optionsFrom: "causes", group: "two" },
-            { id: "recuperacao_prev_testes", label: "Previsão para solicitação de testes", type: "time", group: "two" },
-            { id: "recuperacao_endereco", label: "Endereço da falha", type: "text", placeholder: "Rua, Número, Complemento", group: "two" },
-            { id: "recuperacao_cabo", label: "Cabo / Capacidade / ARO", type: "text", placeholder: "Ex: DROP 4F, 12F, 24F, 36F, 48F, 72F, 144F", group: "two" },
-            { id: "recuperacao_tratativas", label: "Tratativas realizadas", type: "textarea", placeholder: "Descreva as tratativas", group: "full" },
-            { id: "recuperacao_obs", label: "Observações", type: "textarea", placeholder: "Observações gerais", group: "full" }
-          ],
-          stamp: (d) => [
-            "3 – RECUPERAÇÃO DA FALHA", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `Causa raiz: ${d.recuperacao_causa}`,
-            `Previsão para solicitação de testes: ${d.recuperacao_prev_testes}`,
-            `Endereço da falha: ${d.recuperacao_endereco}`,
-            `Cabo/Capacidade/ARO: ${d.recuperacao_cabo}`,
-            `Tratativas realizadas: ${d.recuperacao_tratativas}`,
-            `Obs.: ${d.recuperacao_obs}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function getValueById(id) {
+  const el = $(id);
+  if (!el) return "";
+  if (el.tagName === "SELECT") return el.value || "";
+  return (el.value ?? "").toString();
+}
 
-        {
-          id: "certificacao",
-          label: "4. Certificação",
-          title: "SOLICITAÇÃO DE CERTIFICAÇÃO",
-          fields: [
-            { id: "certificacao_tratativa", label: "Tratativa realizada", type: "textarea", placeholder: "Descrição da tratativa realizada", group: "full" },
-            { id: "certificacao_causa", label: "Causa", type: "select", optionsFrom: "causes", group: "two" },
-            { id: "certificacao_material", label: "Material utilizado", type: "text", placeholder: "Ex: Conector SC, Fibra óptica", group: "two" },
-            { id: "certificacao_foto", label: "Foto em anexo", type: "radio", name: "certificacao_foto", options: ["Sim", "Não"], group: "full" }
-          ],
-          stamp: (d) => [
-            "4 – SOLICITAÇÃO DE CERTIFICAÇÃO", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `Tratativa realizada: ${d.certificacao_tratativa}`,
-            `Causa: ${d.certificacao_causa}`,
-            `Material utilizado: ${d.certificacao_material}`,
-            `Foto em anexo: ${d.certificacao_foto}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function collectData(typeDef) {
+  const data = {};
+  for (const f of SCHEMA.baseFields) {
+    if (f.type === "radio") data[f.id] = getCheckedValue(f.name || f.id);
+    else data[f.id] = (getValueById(f.id).trim?.() ?? getValueById(f.id));
+  }
+  for (const f of (typeDef?.fields || [])) {
+    if (f.type === "radio") data[f.id] = getCheckedValue(f.name || f.id);
+    else data[f.id] = (getValueById(f.id).trim?.() ?? getValueById(f.id));
+  }
+  return data;
+}
 
-        {
-          id: "complementar",
-          label: "Complementar",
-          title: "COMPLEMENTAR",
-          fields: [
-            { id: "complementar_motivo", label: "Motivo", type: "text", placeholder: "Motivo da complementação", group: "two" },
-            { id: "complementar_info", label: "Informação", type: "text", placeholder: "Informação adicional", group: "two" },
-            { id: "nova_previsao", label: "Nova previsão?", type: "radio", name: "nova_previsao", options: ["Sim", "Não"], group: "two" },
-            { id: "complementar_previsao", label: "Previsão", type: "time", group: "two" }
-          ],
-          stamp: (d) => [
-            "COMPLEMENTAR", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `Motivo: ${d.complementar_motivo}`,
-            `Informação: ${d.complementar_info}`,
-            `Nova previsão? ${d.nova_previsao}`,
-            `Previsão: ${d.complementar_previsao}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function hideOutput() { $("output").classList.remove("active"); $("outputText").textContent = ""; $("successMessage").classList.remove("show"); }
 
-        {
-          id: "naofalha",
-          label: "Não há Falha para Rede",
-          title: "NÃO HÁ FALHA PARA REDE",
-          fields: [
-            { id: "naofalha_motivo", label: "Motivo da Improdutiva", type: "textarea", placeholder: "Descreva o motivo da improdutiva", group: "full" },
-            { id: "naofalha_foto", label: "Foto em anexo", type: "radio", name: "naofalha_foto", options: ["Sim", "Não"], group: "two" },
-            { id: "naofalha_gestor", label: "Ciente (Gestor VIVO Rede)", type: "text", value: "João Andrioli", readonly: true, group: "two" }
-          ],
-          stamp: (d) => [
-            "NÃO HÁ FALHA PARA REDE", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `Motivo da improdutiva: ${d.naofalha_motivo}`,
-            `Foto em anexo: ${d.naofalha_foto}`,
-            `Ciente (Gestor VIVO Rede): ${d.naofalha_gestor}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function showOutput(text) { $("outputText").textContent = text; $("output").classList.add("active"); $("output").scrollIntoView({ behavior: "smooth" }); }
 
-        {
-          id: "transbordo",
-          label: "Transbordo",
-          title: "TRANSBORDO",
-          fields: [
-            { id: "transbordota", label: "TA", type: "text", placeholder: "TA", group: "two" },
-            { id: "transbordocontrato", label: "CONTRATO", type: "text", placeholder: "Contrato", group: "two" },
-            { id: "transbordooperadora", label: "TRANSBORDO", type: "text", value: "VIVO", readonly: true, group: "two" }
-          ],
-          stamp: (d) => [
-            "TRANSBORDO", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `TA: ${d.transbordota}`,
-            `CONTRATO: ${d.transbordocontrato}`,
-            `TRANSBORDO: ${d.transbordooperadora}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function clearTypeFields(typeDef) {
+  if (!typeDef) return;
+  for (const f of typeDef.fields) {
+    if (!!f.readonly) continue;
+    if (f.type === "radio") { const nm = f.name || f.id; document.querySelectorAll(`input[name="${CSS.escape(nm)}"]`).forEach(r => r.checked = false); continue; }
+    const el = $(f.id);
+    if (!el) continue;
+    if (f.type === "materials") { el.value = "[]"; el.__clearMaterials && el.__clearMaterials(); continue; }
+    if (f.type === "tags") { el.value = ""; el.__clearTags && el.__clearTags(); continue; }
+    if (el.tagName === "SELECT") el.selectedIndex = 0; else el.value = "";
+  }
+  hideOutput();
+}
 
-        {
-          id: "prazo",
-          label: "Prazo de Reparo",
-          title: "PRAZO DE REPARO",
-          fields: [
-            { id: "prazoreparocargo", label: "Cargo", type: "text", value: "Coordenador", readonly: true, group: "two" },
-            { id: "prazoreparonometel", label: "Nome / Telefone", type: "text", value: "João Andrioli / 41 99244-9441", readonly: true, group: "two" },
-            { id: "prazoreparosla", label: "SLA do evento", type: "text", placeholder: "Ex: 4h, 2h", group: "two" },
-            { id: "prazoreparoobs", label: "Observações", type: "text", placeholder: "Observações", group: "two" }
-          ],
-          stamp: (d) => [
-            "ESCALONAMENTO PRAZO REPARO", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `Cargo: ${d.prazoreparocargo}`,
-            `Nome/Tel.: ${d.prazoreparonometel}`,
-            `SLA do evento: ${d.prazoreparosla}`,
-            `Obs.: ${d.prazoreparoobs}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function renderDynamic(typeId) {
+  const root = $("dynamicRoot");
+  root.innerHTML = "";
+  if (!typeId) { root.innerHTML = `<div class="section"><div class="hint">Selecione um tipo de carimbo acima para ver os campos específicos.</div></div>`; hideOutput(); return; }
+  const typeDef = SCHEMA.types.find(t => t.id === typeId);
+  if (!typeDef) return;
+  root.innerHTML = `<div class="section"><div class="section-title">${escapeHtml(typeDef.title)}</div>${renderForm(typeDef.fields)}<div class="actions"><button class="btn-generate" id="btnGenerate" type="button">Gerar Carimbo</button><button class="btn-clear" id="btnClear" type="button">Limpar Formulário</button></div></div>`;
+  $("btnGenerate").addEventListener("click", () => { const data = collectData(typeDef); const text = typeDef.stamp(data).join("<br>\n").trim(); showOutput(text); });
+  $("btnClear").addEventListener("click", () => clearTypeFields(typeDef));
+  setTimeout(() => { for (const f of typeDef.fields) { if (f.type === "tags") initTagsField(f.id, { delimiter: " / " }); if (f.type === "materials") initMaterialsField(f.id); } }, 0);
+}
 
-        {
-          id: "cire",
-          label: "CIRE",
-          title: "INTERVENÇÃO CIRE",
-          fields: [
-            { id: "cire_solicitante", label: "Solicitante", type: "text", placeholder: "Nome do Solicitante", group: "two" },
-            { id: "cire_contato", label: "Meio de contato", type: "radio", name: "cire_contato", options: ["Telefone", "E-mail", "WhatsApp"], group: "two" },
-            { id: "cire_motivo", label: "Motivo", type: "textarea", placeholder: "Descreva o motivo da intervenção CIRE", group: "full" },
-            { id: "cire_info", label: "Informação", type: "textarea", placeholder: "Informações adicionais", group: "full" },
-            { id: "cire_previsao", label: "Previsão", type: "time", group: "two" }
-          ],
-          stamp: (d) => [
-            "INTERVENÇÃO CIRE", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `Solicitante: ${d.cire_solicitante}`,
-            `Meio de contato: ${d.cire_contato}`,
-            `Motivo: ${d.cire_motivo}`,
-            `Informação: ${d.cire_info}`,
-            `Previsão: ${d.cire_previsao}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function initTagsField(fieldId, { delimiter = " / " } = {}) {
+  const input = document.getElementById(`${fieldId}_input`), chips = document.getElementById(`${fieldId}_chips`), addBtn = document.getElementById(`${fieldId}_add`), hidden = document.getElementById(fieldId);
+  if (!input || !chips || !addBtn || !hidden) return;
+  const state = { items: [] };
+  const syncHidden = () => { hidden.value = state.items.join(delimiter); };
+  const render = () => { chips.innerHTML = ""; state.items.forEach((name, idx) => { const chip = document.createElement("span"); chip.className = "chip"; chip.textContent = name; const x = document.createElement("button"); x.type = "button"; x.textContent = "✕"; x.title = "Remover"; x.addEventListener("click", () => { state.items.splice(idx, 1); syncHidden(); render(); }); chip.appendChild(x); chips.appendChild(chip); }); };
+  const addValue = () => { const raw = (input.value || "").trim(); if (!raw) return; const exists = state.items.some(x => x.toLowerCase() === raw.toLowerCase()); if (exists) { input.value = ""; return; } state.items.push(raw); input.value = ""; syncHidden(); render(); };
+  addBtn.addEventListener("click", addValue);
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addValue(); } if (e.key === "Backspace" && !input.value && state.items.length) { state.items.pop(); syncHidden(); render(); } });
+  hidden.__clearTags = () => { state.items = []; syncHidden(); render(); };
+  syncHidden(); render();
+}
 
-        {
-          id: "escalonamento",
-          label: "Escalonamento sem Equipe",
-          title: "ESCALONAMENTO SEM EQUIPE",
-          fields: [
-            { id: "escalonamento_cargo", label: "Cargo", type: "text", value: "Coordenador", readonly: true, group: "two" },
-            { id: "escalonamento_nome_tel", label: "Nome / Telefone", type: "text", value: "João Andrioli / 41 99244-9441", readonly: true, group: "two" },
-            { id: "escalonamento_sla", label: "SLA do evento", type: "text", placeholder: "Ex: 4h, 2h", group: "two" },
-            { id: "escalonamento_obs", label: "Observações", type: "text", placeholder: "Observações", group: "two" }
-          ],
-          stamp: (d) => [
-            "ESCALONAMENTO SEM EQUIPE", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `Cargo: ${d.escalonamento_cargo}`,
-            `Nome/Tel.: ${d.escalonamento_nome_tel}`,
-            `SLA do evento: ${d.escalonamento_sla}`,
-            `Obs.: ${d.escalonamento_obs}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        },
+function initMaterialsField(fieldId) {
+  const searchInput = document.getElementById(`${fieldId}_search`), qty = document.getElementById(`${fieldId}_qty`), addBtn = document.getElementById(`${fieldId}_add_btn`), list = document.getElementById(`${fieldId}_list`), hidden = document.getElementById(fieldId);
+  if (!searchInput || !qty || !addBtn || !list || !hidden) return;
+  const state = { items: [] };
+  const syncHidden = () => { hidden.value = JSON.stringify(state.items); };
+  const render = () => {
+    list.innerHTML = "";
+    if (state.items.length === 0) { list.innerHTML = `<p class="materials-empty">Nenhum material adicionado</p>`; return; }
+    const table = document.createElement("table");
+    const header = table.insertRow();
+    ["Material", "Qtd", "Un", "Código", ""].forEach(text => { const th = document.createElement("th"); th.textContent = text; header.appendChild(th); });
+    state.items.forEach((item, idx) => {
+      const row = table.insertRow();
+      const cell1 = row.insertCell(); cell1.textContent = item.name;
+      const cell2 = row.insertCell(); cell2.textContent = item.quantity;
+      const cell3 = row.insertCell(); cell3.textContent = item.unit;
+      const cell4 = row.insertCell(); cell4.textContent = item.code;
+      const cell5 = row.insertCell();
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.textContent = "✕"; btn.style.background = "transparent"; btn.style.border = "none"; btn.style.cursor = "pointer"; btn.style.color = "var(--accent)"; btn.style.fontWeight = "700";
+      btn.addEventListener("click", () => { state.items.splice(idx, 1); syncHidden(); render(); });
+      cell5.appendChild(btn); cell5.style.textAlign = "center";
+    });
+    list.appendChild(table);
+  };
+  const addMaterial = () => {
+    const materialName = searchInput.value.trim(); const quantity = parseFloat(qty.value);
+    if (!materialName || !quantity || quantity <= 0) { alert("Digite um material e informe a quantidade válida"); return; }
+    const materialData = SCHEMA.lists.materials.find(m => m.name === materialName);
+    if (!materialData) { alert("Material não encontrado. Selecione da lista."); return; }
+    state.items.push({ name: materialData.name, quantity: quantity, unit: materialData.unit, code: materialData.code });
+    searchInput.value = ""; qty.value = ""; syncHidden(); render(); searchInput.focus();
+  };
+  addBtn.addEventListener("click", addMaterial);
+  qty.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addMaterial(); } });
+  hidden.__clearMaterials = () => { state.items = []; syncHidden(); render(); };
+  syncHidden(); render();
+}
 
-        {
-          id: "cto_defeito",
-          label: "CTO com Defeito",
-          title: "CTO COM DEFEITO",
-          fields: [
-            { id: "cto_defeito_site", label: "Nome SITE/ARO", type: "datalist", listId: "siteList", listFrom: "sites", placeholder: "Digite para pesquisar ou selecione na lista", group: "two" },
-            { id: "cto_defeito_splitter", label: "Splitter", type: "text", placeholder: "Ex: SP001, SP144", group: "two" },
-            { id: "cto_defeito_caixa", label: "Caixa", type: "text", placeholder: "Ex: G0001, G0099, GP0050", group: "two" },
-            { id: "cto_defeito_endereco", label: "Endereço", type: "text", placeholder: "Rua, Número, Complemento", group: "two" },
-            { id: "cto_defeito_causa", label: "Causa", type: "select", optionsFrom: "causes", group: "two" },
-            { id: "cto_defeito_tratativa", label: "Tratativa realizada", type: "textarea", placeholder: "Descreva a tratativa realizada", group: "full" },
-            { id: "cto_defeito_material", label: "Material utilizado", type: "text", placeholder: "Ex: Conector SC, Fibra óptica, Splitter", group: "full" }
-          ],
-          stamp: (d) => [
-            "CTO COM DEFEITO", "",
-            `ID Ocorrência: ${d.id_ocorrencia}`,
-            `SUPERVISOR: ${d.supervisor}`, `Telefone: ${d.supervisor_tel}`,
-            `TÉCNICO: ${d.tecnico}`, `Telefone: ${d.tecnico_tel}`,
-            `Nome SITE/ARO: ${d.cto_defeito_site}`,
-            `Splitter: ${d.cto_defeito_splitter}`,
-            `Caixa: ${d.cto_defeito_caixa}`,
-            `Endereço: ${d.cto_defeito_endereco}`,
-            `Causa: ${d.cto_defeito_causa}`,
-            `Tratativa realizada: ${d.cto_defeito_tratativa}`,
-            `Material utilizado: ${d.cto_defeito_material}`,
-            `Analista CCR: ${d.analista_ccr}`
-          ]
-        }
-      ]
-    };
+async function copyToClipboard() {
+  const text = $("outputText").textContent || "";
+  if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
+  try { await navigator.clipboard.writeText(text); } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.left = "-9999px";
+    document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+  }
+  $("successMessage").classList.add("show");
+  setTimeout(() => $("successMessage").classList.remove("show"), 3000);
+}
 
-    /*****************************************************************
-     * Runtime (geração do formulário)
-     *****************************************************************/
-    const $ = (id) => document.getElementById(id);
+function sendToWhatsApp() {
+  const text = $("outputText").textContent || "";
+  if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
+  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+}
 
-    const normalizeName = (str) =>
-      (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+function initBase() {
+  buildDatalist("supervisorList", SCHEMA.lists.supervisors.map(s => s.name));
+  buildDatalist("analistaList", SCHEMA.lists.analysts);
+  buildDatalist("tecnicoList", SCHEMA.lists.technicians);
+  buildDatalist("siteList", SCHEMA.lists.sites);
+  $("baseForm").innerHTML = renderForm(SCHEMA.baseFields);
+  initTagsField("tecnicos", { delimiter: " / " });
+  $("carimbo_tipo").addEventListener("change", (e) => renderDynamic(e.target.value));
+  $("supervisor").addEventListener("input", function() { const tel = supervisorPhones[normalizeName(this.value)]; $("supervisor_tel").value = tel ?? ""; });
+  $("btnCopy").addEventListener("click", copyToClipboard);
+  $("btnWhats").addEventListener("click", sendToWhatsApp);
+  renderDynamic($("carimbo_tipo").value);
+}
 
-    const supervisorPhones = Object.fromEntries(
-      SCHEMA.lists.supervisors.map(s => [normalizeName(s.name), s.phone])
-    );
-
-    function escapeHtml(s) {
-      return String(s ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function buildDatalist(id, values) {
-      // cria/atualiza um datalist no DOM
-      let dl = $(id);
-      if (!dl) {
-        dl = document.createElement("datalist");
-        dl.id = id;
-        document.body.appendChild(dl);
-      }
-      dl.innerHTML = values.map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
-    }
-
-    function groupClass(group) {
-      if (group === "full") return "form-group full";
-      if (group === "three") return "form-group three-col";
-      return "form-group"; // two (default)
-    }
-
-    function renderField(field) {
-      const {
-        id, label, type, placeholder, value, readonly, inputmode, step,
-        listId, listFrom, options, optionsFrom, name
-      } = field;
-
-      const safeLabel = escapeHtml(label || "");
-      const safeId = escapeHtml(id || "");
-      const ro = readonly ? "readonly" : "";
-      const im = inputmode ? `inputmode="${escapeHtml(inputmode)}"` : "";
-      const st = step ? `step="${escapeHtml(step)}"` : "";
-      const ph = placeholder ? `placeholder="${escapeHtml(placeholder)}"` : "";
-      const val = (value !== undefined && value !== null) ? `value="${escapeHtml(value)}"` : "";
-
-      if (type === "textarea") {
-        return `
-          <div>
-            <label for="${safeId}">${safeLabel}</label>
-            <textarea id="${safeId}" ${ph} ${ro}>${escapeHtml(value ?? "")}</textarea>
-          </div>
-        `;
-      }
-
-      if (type === "select") {
-        const opts = optionsFrom
-          ? (optionsFrom === "types"
-              ? SCHEMA.types.map(t => ({ value: t.id, text: t.label }))
-              : (SCHEMA.lists[optionsFrom] || []).map(v => ({ value: v, text: v }))
-            )
-          : (options || []).map(v => ({ value: v, text: v }));
-
-        const first = (id === "carimbo_tipo")
-          ? `<option value="">-- Selecione --</option>`
-          : `<option value="" disabled selected>Selecione</option>`;
-
-        return `
-          <div>
-            <label for="${safeId}">${safeLabel}</label>
-            <select id="${safeId}">
-              ${first}
-              ${opts.map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.text)}</option>`).join("")}
-            </select>
-          </div>
-        `;
-      }
-
-      if (type === "radio") {
-        const radioName = name || id;
-        const opts = (options || []);
-        return `
-          <div>
-            <label>${safeLabel}</label>
-            <div class="checkbox-group">
-              ${opts.map(opt => {
-                const v = escapeHtml(opt);
-                return `<label><input type="radio" name="${escapeHtml(radioName)}" value="${v}"> ${v}</label>`;
-              }).join("")}
-            </div>
-          </div>
-        `;
-      }
-
-      if (type === "datalist") {
-        // garante datalist populado
-        const values = (listFrom === "supervisors")
-          ? SCHEMA.lists.supervisors.map(s => s.name)
-          : (SCHEMA.lists[listFrom] || []);
-        buildDatalist(listId, values);
-
-        return `
-          <div>
-            <label for="${safeId}">${safeLabel}</label>
-            <input type="text" id="${safeId}" list="${escapeHtml(listId)}" ${ph} ${val} ${ro} />
-          </div>
-        `;
-      }
-
-      // input genérico
-      const inputType = escapeHtml(type || "text");
-      return `
-        <div>
-          <label for="${safeId}">${safeLabel}</label>
-          <input type="${inputType}" id="${safeId}" ${ph} ${val} ${ro} ${im} ${st} />
-        </div>
-      `;
-    }
-
-    function renderForm(fields) {
-      // agrupa por "group" para montar linhas
-      const rows = [];
-      let buffer = [];
-
-      function flush(group) {
-        if (!buffer.length) return;
-        rows.push(`<div class="${groupClass(group)}">${buffer.join("")}</div>`);
-        buffer = [];
-      }
-
-      let currentGroup = null;
-
-      for (const f of fields) {
-        const g = f.group || "two";
-        if (currentGroup === null) currentGroup = g;
-        if (g !== currentGroup) {
-          flush(currentGroup);
-          currentGroup = g;
-        }
-        buffer.push(renderField(f));
-      }
-      flush(currentGroup);
-
-      return rows.join("");
-    }
-
-    function getCheckedValue(name) {
-      return document.querySelector(`input[name="${CSS.escape(name)}"]:checked`)?.value || "";
-    }
-
-    function getValueById(id) {
-      const el = $(id);
-      if (!el) return "";
-      if (el.tagName === "SELECT") return el.value || "";
-      return (el.value ?? "").toString();
-    }
-
-    function collectData(typeDef) {
-      const data = {};
-      // base
-      for (const f of SCHEMA.baseFields) {
-        if (f.type === "radio") data[f.id] = getCheckedValue(f.name || f.id);
-        else data[f.id] = getValueById(f.id).trim?.() ?? getValueById(f.id);
-      }
-      // tipo específico
-      for (const f of (typeDef?.fields || [])) {
-        if (f.type === "radio") data[f.id] = getCheckedValue(f.name || f.id);
-        else data[f.id] = getValueById(f.id).trim?.() ?? getValueById(f.id);
-      }
-      return data;
-    }
-
-    function hideOutput() {
-      $("output").classList.remove("active");
-      $("outputText").textContent = "";
-      $("successMessage").classList.remove("show");
-    }
-
-    function showOutput(text) {
-      $("outputText").textContent = text;
-      $("output").classList.add("active");
-      $("output").scrollIntoView({ behavior: "smooth" });
-    }
-
-    function clearTypeFields(typeDef) {
-      if (!typeDef) return;
-      for (const f of typeDef.fields) {
-        const ro = !!f.readonly;
-        if (ro) continue;
-
-        if (f.type === "radio") {
-          const nm = f.name || f.id;
-          document.querySelectorAll(`input[name="${CSS.escape(nm)}"]`).forEach(r => r.checked = false);
-          continue;
-        }
-
-        const el = $(f.id);
-        if (!el) continue;
-        if (el.tagName === "SELECT") el.selectedIndex = 0;
-        else el.value = "";
-      }
-      hideOutput();
-    }
-
-    function renderDynamic(typeId) {
-      const root = $("dynamicRoot");
-      root.innerHTML = "";
-
-      if (!typeId) {
-        root.innerHTML = `
-          <div class="section">
-            <div class="hint">Selecione um tipo de carimbo acima para ver os campos específicos.</div>
-          </div>
-        `;
-        hideOutput();
-        return;
-      }
-
-      const typeDef = SCHEMA.types.find(t => t.id === typeId);
-      if (!typeDef) return;
-
-      root.innerHTML = `
-        <div class="section">
-          <div class="section-title">${escapeHtml(typeDef.title)}</div>
-          ${renderForm(typeDef.fields)}
-          <div class="actions">
-            <button class="btn-generate" id="btnGenerate" type="button">Gerar Carimbo</button>
-            <button class="btn-clear" id="btnClear" type="button">Limpar Formulário</button>
-          </div>
-        </div>
-      `;
-
-      $("btnGenerate").addEventListener("click", () => {
-        const data = collectData(typeDef);
-        const text = typeDef.stamp(data).join("\n").trim();
-        showOutput(text);
-      });
-
-      $("btnClear").addEventListener("click", () => clearTypeFields(typeDef));
-    }
-
-    async function copyToClipboard() {
-      const text = $("outputText").textContent || "";
-      if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
-      try {
-        await navigator.clipboard.writeText(text);
-      } catch {
-        const ta = document.createElement("textarea");
-        ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.left="-9999px";
-        document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
-      }
-      $("successMessage").classList.add("show");
-      setTimeout(() => $("successMessage").classList.remove("show"), 3000);
-    }
-
-    function sendToWhatsApp() {
-      const text = $("outputText").textContent || "";
-      if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
-      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
-    }
-
-    function initBase() {
-      // garante datalists base
-      buildDatalist("supervisorList", SCHEMA.lists.supervisors.map(s => s.name));
-      buildDatalist("analistaList", SCHEMA.lists.analysts);
-      buildDatalist("siteList", SCHEMA.lists.sites);
-
-      // render base form
-      $("baseForm").innerHTML = renderForm(SCHEMA.baseFields);
-
-      // bind: troca de tipo
-      $("carimbo_tipo").addEventListener("change", (e) => renderDynamic(e.target.value));
-
-      // bind: autopreencher telefone supervisor
-      $("supervisor").addEventListener("input", function() {
-        const tel = supervisorPhones[normalizeName(this.value)];
-        $("supervisor_tel").value = tel ?? "";
-      });
-
-      // binds output
-      $("btnCopy").addEventListener("click", copyToClipboard);
-      $("btnWhats").addEventListener("click", sendToWhatsApp);
-
-      // estado inicial
-      renderDynamic($("carimbo_tipo").value);
-    }
-
-    document.addEventListener("DOMContentLoaded", initBase);
+document.addEventListener("DOMContentLoaded", initBase);
   </script>
 </body>
 </html>

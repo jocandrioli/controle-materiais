@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gerador de Carimbo - Acionamento GPON</title>
   <style>
-
 /* Autocomplete visível ao digitar (bom no mobile) */
 .suggest-box{
   position:relative;
@@ -35,7 +34,6 @@
 .suggest-item:hover{background:#f6faff;}
 .suggest-muted{color:var(--muted); font-size:12px; padding:10px 12px;}
 
-    
     :root{--primary:#003366;--primary-2:#004d99;--accent:#ff6600;--info:#0066cc;--bg:#f5f5f5;--panel:#fafafa;--text:#333;--muted:#666;--border:#ddd;--border-2:#999;--radius:8px}
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:Arial,sans-serif;background:var(--bg);padding:20px;line-height:1.6;color:var(--text)}
@@ -75,12 +73,10 @@
     .success-message.show{display:block}
     .mini{font-size:11px;color:var(--muted)}
     .tags-wrap{border:1px solid var(--border-2);border-radius:4px;padding:6px;background:#fff}
-    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-    .chip{background:#e8f0fe;border:1px solid #b6c8ff;color:#1a3b8f;padding:4px 8px;border-radius:999px;display:inline-flex;gap:8px;align-items:center;font-size:12px}
-    .chip button{border:0;background:transparent;cursor:pointer;font-weight:700;color:#1a3b8f;padding:0;min-width:auto}
     .tags-row{display:flex;gap:8px;align-items:center}
     .tags-row input{border:1px solid var(--border);flex:1}
     .tags-row .btn-add{padding:8px 10px;flex:0;background:var(--info)}
+
     .materials-wrap{border:1px solid var(--border-2);border-radius:4px;padding:10px;background:#fff}
     .materials-list{margin-bottom:12px;max-height:250px;overflow-y:auto}
     .materials-list table{width:100%;border-collapse:collapse;font-size:12px}
@@ -91,6 +87,15 @@
     .materials-add select{flex:1;min-width:200px}
     .materials-add input[type="number"]{width:80px}
     .materials-empty{color:var(--muted);padding:8px 0;font-size:12px}
+
+    /* ✅ Tabela de técnicos substituindo chips */
+    .tech-table { margin-top: 10px; }
+    .tech-table table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .tech-table th, .tech-table td { border: 1px solid var(--border); padding: 6px; text-align: left; }
+    .tech-table th { background: #f0f0f0; font-weight: 700; }
+    .tech-table .btn-x { background: transparent; border: none; cursor: pointer; color: var(--accent); font-weight: 700; }
+    .tech-table .muted { color: var(--muted); font-size: 12px; padding: 6px 0; }
+
     @media (max-width:768px){.form-group{grid-template-columns:1fr}.form-group.three-col{grid-template-columns:1fr}.actions{flex-direction:column}button{width:100%}.tags-row{flex-direction:column;align-items:stretch}.tags-row .btn-add{width:100%}.materials-add{flex-direction:column;align-items:stretch}.materials-add select,.materials-add input{width:100%}}
   </style>
 </head>
@@ -132,9 +137,55 @@ const SCHEMA = {
       { name: "Rodrigo Duarte", phone: "(51) 99758-7793" },
       { name: "Rodrigo Rosa", phone: "(51) 99840-6074" }
     ],
-    
+
     analysts: ["Carina F. Chuquel","Edmilson G. Rieira","Eduarda P. Rodrigues","Julia S. Silva","Matheus A. Castro","Rafaela V. Dias","Silvio L. R. Putrique"],
-    technicians: ["Matheus S. Sanguine","Ismael S. Brito","Guilherme S. Freitas","Vagner L. Flores","Sergio Klug","Marcelo B. Conforti","Luis A. Fagundes","Valdir R. Almeida","Alexandre M. S. Santos","Rafael B. Marco","Pablo J. Rosa","Uilian S. Salgado","Mauricio G. Bairros","Oldonir A. S. Silva","Carlos D. Silva","Marco A. Espindula","Luis C. Santos","Alex G. Matzenbacher","Laerte R. Silva","Cassiano R. A. Silva","Marcio A. G. Santos","Jair S. Correia","Anderson T. Correa","Neivo J. Rosa","Lucas P. Cordeiro","Robson R. Silva","Luciano Mabilia","José H. Machado","Silvio L. R. Putrique","Vinicius S. Camponogara","Lindomar A. Nascimento","Atilas P. Carvalho","Diego M. Flores","Maicon S. Amorim","Carlos A. Souza","Ronaldo F. Dutra","Luis G. V. Ramos","Nairo Mirandolli","Antonio C. V. Callegari","João C. Marques","Jonatan G. Santos","Marcelo S. Teixeira","Miguel A. F. S. Machado","Gabriel A. Ziemer"],
+
+// ✅ Diretório de técnicos (CONTATO / MATRÍCULA / COLABORADOR) — nomes abreviados
+techDirectory: [
+  { phone:"51 99763-8035", matricula:"00076213", name:"Matheus S. Sanguine" },
+  { phone:"51 99924-4755", matricula:"00163361", name:"Luciano Mabilia" },
+  { phone:"51 99678-8025", matricula:"00163721", name:"Ismael S. Brito" },
+  { phone:"51 99422-8248", matricula:"00060280", name:"Valdir R. C. Almeida" },
+  { phone:"51 98030-9631", matricula:"00073519", name:"Silvio L. R. Putrique" },
+  { phone:"51 99534-1867", matricula:"03540223", name:"José H. O. Machado" },
+  { phone:"51 98054-0410", matricula:"00163877", name:"Guilherme D. S. Freitas" },
+  { phone:"51 99526-0602", matricula:"00159101", name:"Lucas D. P. Cordeiro" },
+  { phone:"51 99709-0842", matricula:"00163697", name:"Robson R. Silva" },
+  { phone:"51 99618-2075", matricula:"00060276", name:"Laerte R. Silva" },
+  { phone:"51 99763-4557", matricula:"00075430", name:"Marcio A. G. S. Santos" },
+  { phone:"51 98064-4219", matricula:"00163623", name:"Luis C. S. Santos" },
+  { phone:"51 98658-5845", matricula:"00161608", name:"Ronaldo F. Dutra" },
+  { phone:"51 99612-4572", matricula:"03538188", name:"Marco A. Espindula" },
+  { phone:"51 98200-2880", matricula:"00161750", name:"Neivo J. Rosa" },
+  { phone:"51 99747-3044", matricula:"00163141", name:"Luis G. V. Ramos" },
+  { phone:"51 98457-3078", matricula:"00161587", name:"Carlos D. R. S. Silva" },
+  { phone:"51 98059-7226", matricula:"00163233", name:"Alex G. Matzenbacher" },
+  { phone:"51 98023-8657", matricula:"03552249", name:"Carlos A. Souza" },
+  { phone:"51 99570-4213", matricula:"03550117", name:"Cassiano R. A. S. Silva" },
+  { phone:"51 99919-9314", matricula:"00164406", name:"Jair S. Correia" },
+  { phone:"51 99764-5055", matricula:"00069814", name:"Sergio Klug" },
+  { phone:"51 98041-7960", matricula:"00163287", name:"Pablo J. Rosa" },
+  { phone:"51 98053-8983", matricula:"03538781", name:"Rafael B. Marco" },
+  { phone:"51 99871-5081", matricula:"03538393", name:"Nairo I. Mirandoli" },
+  { phone:"51 98098-6616", matricula:"00163683", name:"Diego M. Flores" },
+  { phone:"51 99150-5863", matricula:"00161589", name:"Alexandre M. F. S. Santos" },
+  { phone:"51 99597-6730", matricula:"00075370", name:"Atilas P. Carvalho" },
+  { phone:"51 99231-4424", matricula:"00176139", name:"Antonio C. V. Callegari" },
+  { phone:"51 99796-5508", matricula:"00176016", name:"João C. C. Marques" },
+  { phone:"51 99516-6051", matricula:"00176136", name:"Jonatan G. Santos" },
+  { phone:"51 99628-3036", matricula:"00176067", name:"Lindomar A. Nascimento" },
+  { phone:"51 98050-2082", matricula:"00176104", name:"Marcelo D. S. Teixeira" },
+  { phone:"51 99774-0215", matricula:"00176008", name:"Miguel A. F. S. M. Machado" },
+  { phone:"51 99859-9693", matricula:"00176073", name:"Uilian D. S. Salgado" },
+  { phone:"51 99743-3673", matricula:"00176312", name:"Anderson T. C. Costa" },
+  { phone:"51 99528-9884", matricula:"00176299", name:"Gabriel A. Ziemer" },
+  { phone:"51 99514-2776", matricula:"00176261", name:"Maicon S. Amorim" },
+  { phone:"51 99897-8292", matricula:"00176115", name:"Vinicius D. S. Camponogara" }
+],
+
+    // Esta lista será preenchida automaticamente a partir do diretório
+    technicians: ["placeholder"],
+
     sites: ["RSCBM_G1N01","RSCBM_O1A01","RSGUB_G1N01","RSNHO_G1I02","RSPAE_G1B95","RSPAE_G1C01","RSPAE_G1I22","RSPAE_G1I23","RSPAE_G1I24","RSPAE_G1I25","RSPAE_G1I26","RSPAE_G1I32","RSPAE_G1I33","RSPAE_G1I35","RSPAE_G1I41","RSPAE_G1I47","RSPAE_G1I48","RSPAE_G1I51","RSPAE_G1I55","RSPAE_G1I57","RSPAE_G1N42","RSPAE_G1N45","RSSLE_G1M01","RSSLE_O1A04"],
     causes: ["Abalroamento","Furto","Acidente","Descarga","Vandalismo","Troca de poste","Degradação / Infiltração","Defeito Splitter","Falha em atividade anterior","Obra de terceiros","Interperie","Ataque de animais"],
     materials: [
@@ -152,7 +203,7 @@ const SCHEMA = {
       {id:"mat_0012",name:"DERIVACAO PREF P CORD DIELETRICA 6,4",code:"0380-9202-2",unit:"un"},
       {id:"mat_0013",name:"FIO DE ESPINAR DIELETRICO",code:"0380-9203-3",unit:"m"},
       {id:"mat_0014",name:"LAÇO PREF. P/ CORDOALHA DIELÉTRICA 6,4",code:"0380-9204-4",unit:"un"},
-      {id:"mat_0015",name:"CABO OPTICO CFOA-SM AS 80 24F TS",code:"0452-0120-3",unit:"m"},
+      {id:"mat_0015",name:"CABO CFOA-SM AS 80 24F TS",code:"0452-0120-3",unit:"m"},
       {id:"mat_0016",name:"KIT DERIV TERMOC CEO AEREO/SUBT FOSC100",code:"0460-0048-2",unit:"un"},
       {id:"mat_0017",name:"CAIXA OPTICA 6 ADAPTADORES + PIGTAIL",code:"0486-0358-5",unit:"un"},
       {id:"mat_0018",name:"CRUZETA P RESERVA TÉCNICA FO POSTE 300mm",code:"0254-0061-4",unit:"un"},
@@ -232,11 +283,12 @@ const SCHEMA = {
       {id:"mat_0092",name:"CABO DROP ALTA CAPACID. 72 FIBRAS S/MPO",code:"0452-1333-0",unit:"m"},
       {id:"mat_0093",name:"Protetor p/ Conec Reforçado de Campo",code:"0458-0015-0",unit:"un"},
       {id:"mat_0094",name:"ALÇA PREF P/ CABO DROP ALT. CAP. 72FO",code:"0256-0367-0",unit:"un"},
-      {id:"mat_0095",name:"ALÇA PREF P/ CABO DROP ALT. CAP 144FO",code:"0256-0368-0",unit:"un"}
+      {id:"mat_0095",name:"ALÇA PREF P/ CABO DROP ALT. CAP 144FO",code:"0256-0368-0",unit:"un"},
+      {id:"mat_0096",name:"PROTETOR EMENDA 45 mm X 3,5 m (Tubete)",code:"0458-0018-0",unit:"un"}
     ]
   },
   baseFields: [
-    {id:"id_ocorrencia",label:"ID Ocorrência/OS CTO (BA/TT)",type:"text",placeholder:"Ex: 123456",group:"two"},
+    {id:"id_ocorrencia",label:"Ocorrência/Porta CTO (BA/TT)",type:"text",placeholder:"Ex: 123456",group:"two"},
     {id:"carimbo_tipo",label:"Selecione o Tipo de Carimbo",type:"select",optionsFrom:"types",group:"two"},
     {id:"supervisor",label:"Supervisor",type:"datalist",listId:"supervisorList",listFrom:"supervisors",placeholder:"Nome do Supervisor",group:"two"},
     {id:"supervisor_tel",label:"Telefone Supervisor",type:"tel",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
@@ -245,40 +297,144 @@ const SCHEMA = {
     {id:"analista_ccr",label:"Analista CCR",type:"datalist",listId:"analistaList",listFrom:"analysts",placeholder:"Digite para pesquisar ou selecione na lista",group:"full"}
   ],
   types: [
-    {id:"acionamento",label:"1. Acionamento",title:"ACIONAMENTO",fields:[{id:"acionamento_prev_chegada",label:"Previsão de chegada ao SITE/ARO para medições",type:"time",group:"two"},{id:"acionamento_site",label:"Nome SITE/ARO para medições",type:"datalist",listId:"siteList",listFrom:"sites",placeholder:"Digite para pesquisar ou selecione na lista",group:"two"}],stamp:(d)=>["1 – ACIONAMENTO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Previsão de chegada ao SITE/ARO para medições: ${d.acionamento_prev_chegada}`,`Nome SITE/ARO para medições: ${d.acionamento_site}`,`Analista CCR: ${d.analista_ccr}`]},
-    {id:"deslocamento",label:"2. Deslocamento ao Ponto da Falha",title:"DESLOCAMENTO AO PONTO DA FALHA",fields:[{id:"deslocamento_km",label:"KM até o LOCAL da falha",type:"number",step:"0.1",placeholder:"Ex: 15.5",group:"two"},{id:"deslocamento_prev_chegada",label:"Previsão de chegada ao LOCAL da falha",type:"time",group:"two"},{id:"deslocamento_obs",label:"Observações",type:"textarea",placeholder:"Observações sobre o deslocamento",group:"full"}],stamp:(d)=>["2 – DESLOCAMENTO AO PONTO DA FALHA","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`KM até o LOCAL da falha: ${d.deslocamento_km} km`,`Previsão de chegada ao LOCAL da falha: ${d.deslocamento_prev_chegada}`,`Obs.: ${d.deslocamento_obs}`,`Analista CCR: ${d.analista_ccr}`]},
-    {id:"recuperacao",label:"3. Recuperação da Falha",title:"RECUPERAÇÃO DA FALHA",fields:[{id:"recuperacao_causa",label:"Causa raiz",type:"select",optionsFrom:"causes",group:"two"},{id:"recuperacao_prev_testes",label:"Previsão para solicitação de testes",type:"time",group:"two"},{id:"recuperacao_endereco",label:"Endereço da falha",type:"text",placeholder:"Rua, Número, Complemento",group:"two"},{id:"recuperacao_cabo",label:"Cabo / Capacidade / ARO",type:"text",placeholder:"Ex: DROP 4F, 12F, 24F, 36F, 48F, 72F, 144F",group:"two"},{id:"recuperacao_tratativas",label:"Tratativas realizadas",type:"textarea",placeholder:"Descreva as tratativas",group:"full"},{id:"recuperacao_obs",label:"Observações",type:"textarea",placeholder:"Observações gerais",group:"full"}],stamp:(d)=>["3 – RECUPERAÇÃO DA FALHA","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Causa raiz: ${d.recuperacao_causa}`,`Previsão para solicitação de testes: ${d.recuperacao_prev_testes}`,`Endereço da falha: ${d.recuperacao_endereco}`,`Cabo/Capacidade/ARO: ${d.recuperacao_cabo}`,`Tratativas realizadas: ${d.recuperacao_tratativas}`,`Obs.: ${d.recuperacao_obs}`,`Analista CCR: ${d.analista_ccr}`]},
-    {id:"certificacao",label:"4. Certificação",title:"SOLICITAÇÃO DE CERTIFICAÇÃO",fields:[{id:"certificacao_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descrição da tratativa realizada",group:"full"},{id:"certificacao_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},{id:"certificacao_material",label:"Materiais Utilizados",type:"materials",group:"full"},{id:"certificacao_foto",label:"Foto em anexo",type:"radio",name:"certificacao_foto",options:["Sim","Não"],group:"full"}],stamp:(d)=>{const materials=JSON.parse(d.certificacao_material||"[]");const materialText=materials.length>0?"Materiais utilizados:\n"+materials.map(m=>`  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`).join("\n"):"Nenhum material registrado";return["4 – SOLICITAÇÃO DE CERTIFICAÇÃO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Tratativa realizada: ${d.certificacao_tratativa}`,`Causa: ${d.certificacao_causa}`,materialText,`Foto em anexo: ${d.certificacao_foto}`,`Analista CCR: ${d.analista_ccr}`]}},
+    {id:"acionamento",label:"1. Acionamento",title:"ACIONAMENTO",fields:[{id:"acionamento_prev_chegada",label:"Previsão de chegada ao SITE/ARO para medições",type:"time",group:"two"},{id:"acionamento_site",label:"Nome SITE/ARO para medições",type:"datalist",listId:"siteList",listFrom:"sites",placeholder:"Digite para pesquisar ou selecione na lista",group:"two"}],stamp:(d)=>["1 - ACIONAMENTO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Previsão de chegada ao SITE/ARO para medições: ${d.acionamento_prev_chegada}`,`Nome SITE/ARO para medições: ${d.acionamento_site}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"deslocamento",label:"2. Deslocamento ao Ponto da Falha",title:"DESLOCAMENTO AO PONTO DA FALHA",fields:[{id:"deslocamento_km",label:"KM até o LOCAL da falha",type:"number",step:"0.1",placeholder:"Ex: 15.5",group:"two"},{id:"deslocamento_prev_chegada",label:"Previsão de chegada ao LOCAL da falha",type:"time",group:"two"},{id:"deslocamento_obs",label:"Observações",type:"textarea",placeholder:"Observações sobre o deslocamento",group:"full"}],stamp:(d)=>["2 - DESLOCAMENTO AO PONTO DA FALHA","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`KM até o LOCAL da falha: ${d.deslocamento_km} km`,`Previsão de chegada ao LOCAL da falha: ${d.deslocamento_prev_chegada}`,`Obs.: ${d.deslocamento_obs}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"recuperacao",label:"3. Recuperação da Falha",title:"RECUPERAÇÃO DA FALHA",fields:[{id:"recuperacao_causa",label:"Causa raiz",type:"select",optionsFrom:"causes",group:"two"},{id:"recuperacao_prev_testes",label:"Previsão para solicitação de testes",type:"time",group:"two"},{id:"recuperacao_endereco",label:"Endereço da falha",type:"text",placeholder:"Rua, Número, Complemento",group:"two"},{id:"recuperacao_cabo",label:"Cabo / Capacidade / ARO",type:"select",options:["Drop Fig8 4F","12F","24F","36F","48F","72F","144F","288F"],group:"two"},{id:"recuperacao_tratativas",label:"Tratativas realizadas",type:"textarea",placeholder:"Descreva as tratativas",group:"full"},{id:"recuperacao_obs",label:"Observações",type:"textarea",placeholder:"Observações gerais",group:"full"}],stamp:(d)=>["3 - RECUPERAÇÃO DA FALHA","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Causa raiz: ${d.recuperacao_causa}`,`Previsão para solicitação de testes: ${d.recuperacao_prev_testes}`,`Endereço da falha: ${d.recuperacao_endereco}`,`Cabo/Capacidade/ARO: ${d.recuperacao_cabo}`,`Tratativas realizadas: ${d.recuperacao_tratativas}`,`Obs.: ${d.recuperacao_obs}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"certificacao",label:"4. Certificação",title:"SOLICITAÇÃO DE CERTIFICAÇÃO",fields:[
+      {id:"certificacao_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descrição da tratativa realizada",group:"full"},
+      {id:"certificacao_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},
+      {id:"certificacao_material",label:"Materiais Utilizados",type:"materials",group:"full"},
+      {id:"certificacao_foto",label:"Foto em anexo",type:"radio",name:"certificacao_foto",options:["Sim","Não"],group:"full"},
+      // ✅ Campo de geolocalização específico (preenchido automaticamente ao gerar carimbo)
+      {id:"certificacao_geo",label:"Geolocalização (auto)",type:"text",placeholder:"Lat,Lng ±precisão | data e hora",readonly:true,group:"full"}
+    ],
+stamp:(d)=>{
+  const materials = JSON.parse(d.certificacao_material || "[]");
+  const materialLines = materials.length > 0
+    ? ["Materiais utilizados:", ...materials.map(m => `  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`)]
+    : ["Nenhum material registrado"];
+
+  return [
+    "4 - SOLICITAÇÃO DE CERTIFICAÇÃO", "",
+    `ID Ocorrência: ${d.id_ocorrencia}`,
+    `Supervisor: ${d.supervisor}`,
+    `Telefone: ${d.supervisor_tel}`,
+    `Técnicos(s): ${d.tecnicos}`,
+    `Telefone: ${d.tecnico_tel}`,
+    `Tratativa realizada: ${d.certificacao_tratativa}`,
+    `Causa: ${d.certificacao_causa}`,
+    ...materialLines,
+    `Foto em anexo: ${d.certificacao_foto}`,
+    // ✅ inclui a geolocalização capturada
+    `Geolocalização: ${d.certificacao_geo || "indisponível"}`,
+    `Analista CCR: ${d.analista_ccr}`
+  ];
+}
+} ,
     {id:"complementar",label:"Complementar",title:"COMPLEMENTAR",fields:[{id:"complementar_motivo",label:"Motivo",type:"text",placeholder:"Motivo da complementação",group:"two"},{id:"complementar_info",label:"Informação",type:"text",placeholder:"Informação adicional",group:"two"},{id:"nova_previsao",label:"Nova previsão?",type:"radio",name:"nova_previsao",options:["Sim","Não"],group:"two"},{id:"complementar_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["COMPLEMENTAR","",`ID Ocorrência: ${d.id_ocorrencia}`,`Motivo: ${d.complementar_motivo}`,`Informação: ${d.complementar_info}`,`Nova previsão? ${d.nova_previsao}`,`Previsão: ${d.complementar_previsao}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"naofalha",label:"Não há Falha para Rede",title:"NÃO HÁ FALHA PARA REDE",fields:[{id:"naofalha_motivo",label:"Motivo da Improdutiva",type:"textarea",placeholder:"Descreva o motivo da improdutiva",group:"full"},{id:"naofalha_foto",label:"Foto em anexo",type:"radio",name:"naofalha_foto",options:["Sim","Não"],group:"two"},{id:"naofalha_gestor",label:"Ciente (Gestor VIVO Rede)",type:"text",value:"João Andrioli",readonly:true,group:"two"}],stamp:(d)=>["NÃO HÁ FALHA PARA REDE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Motivo da improdutiva: ${d.naofalha_motivo}`,`Foto em anexo: ${d.naofalha_foto}`,`Ciente (Gestor VIVO Rede): ${d.naofalha_gestor}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"transbordo",label:"Transbordo",title:"TRANSBORDO",fields:[{id:"transbordota",label:"TA",type:"text",placeholder:"TA",group:"two"},{id:"transbordocontrato",label:"CONTRATO",type:"text",placeholder:"Contrato",group:"two"},{id:"transbordooperadora",label:"TRANSBORDO",type:"text",value:"VIVO",readonly:true,group:"two"}],stamp:(d)=>["TRANSBORDO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`TA: ${d.transbordota}`,`CONTRATO: ${d.transbordocontrato}`,`TRANSBORDO: ${d.transbordooperadora}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"prazo",label:"Prazo de Reparo",title:"PRAZO DE REPARO",fields:[{id:"prazoreparocargo",label:"Cargo",type:"text",value:"Coordenador",readonly:true,group:"two"},{id:"prazoreparonometel",label:"Nome / Telefone",type:"text",value:"João Andrioli / 41 99244-9441",readonly:true,group:"two"},{id:"prazoreparosla",label:"SLA do evento",type:"text",placeholder:"Ex: 4h, 2h",group:"two"},{id:"prazoreparoobs",label:"Observações",type:"text",placeholder:"Observações",group:"two"}],stamp:(d)=>["ESCALONAMENTO PRAZO REPARO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Cargo: ${d.prazoreparocargo}`,`Nome/Tel.: ${d.prazoreparonometel}`,`SLA do evento: ${d.prazoreparosla}`,`Obs.: ${d.prazoreparoobs}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"cire",label:"CIRE",title:"INTERVENÇÃO CIRE",fields:[{id:"cire_solicitante",label:"Solicitante",type:"text",placeholder:"Nome do Solicitante",group:"two"},{id:"cire_contato",label:"Meio de contato",type:"radio",name:"cire_contato",options:["Telefone","E-mail","WhatsApp"],group:"two"},{id:"cire_motivo",label:"Motivo",type:"textarea",placeholder:"Descreva o motivo da intervenção CIRE",group:"full"},{id:"cire_info",label:"Informação",type:"textarea",placeholder:"Informações adicionais",group:"full"},{id:"cire_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["INTERVENÇÃO CIRE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Solicitante: ${d.cire_solicitante}`,`Meio de contato: ${d.cire_contato}`,`Motivo: ${d.cire_motivo}`,`Informação: ${d.cire_info}`,`Previsão: ${d.cire_previsao}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"escalonamento",label:"Escalonamento sem Equipe",title:"ESCALONAMENTO SEM EQUIPE",fields:[{id:"escalonamento_cargo",label:"Cargo",type:"text",value:"Coordenador",readonly:true,group:"two"},{id:"escalonamento_nome_tel",label:"Nome / Telefone",type:"text",value:"João Andrioli / 41 99244-9441",readonly:true,group:"two"},{id:"escalonamento_sla",label:"SLA do evento",type:"text",placeholder:"Ex: 4h, 2h",group:"two"},{id:"escalonamento_obs",label:"Observações",type:"text",placeholder:"Observações",group:"two"}],stamp:(d)=>["ESCALONAMENTO SEM EQUIPE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Cargo: ${d.escalonamento_cargo}`,`Nome/Tel.: ${d.escalonamento_nome_tel}`,`SLA do evento: ${d.escalonamento_sla}`,`Obs.: ${d.escalonamento_obs}`,`Analista CCR: ${d.analista_ccr}`]},
-    {id:"cto_defeito",label:"CTO com Defeito",title:"CTO COM DEFEITO",fields:[{id:"cto_defeito_site",label:"Nome SITE/ARO",type:"datalist",listId:"siteList",listFrom:"sites",placeholder:"Digite para pesquisar ou selecione na lista",group:"two"},{id:"cto_defeito_splitter",label:"Splitter",type:"text",placeholder:"Ex: SP001, SP144",group:"two"},{id:"cto_defeito_caixa",label:"Caixa",type:"text",placeholder:"Ex: G0001, G0099, GP0050",group:"two"},{id:"cto_defeito_endereco",label:"Endereço",type:"text",placeholder:"Rua, Número, Complemento",group:"two"},{id:"cto_defeito_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},{id:"cto_defeito_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descreva a tratativa realizada",group:"full"},{id:"cto_defeito_material",label:"Materiais Utilizados",type:"materials",group:"full"}],stamp:(d)=>{const materials=JSON.parse(d.cto_defeito_material||"[]");const materialText=materials.length>0?"Materiais utilizados:\n"+materials.map(m=>`  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`).join("\n"):"Nenhum material registrado";return["CTO COM DEFEITO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Nome SITE/ARO: ${d.cto_defeito_site}`,`Splitter: ${d.cto_defeito_splitter}`,`Caixa: ${d.cto_defeito_caixa}`,`Endereço: ${d.cto_defeito_endereco}`,`Causa: ${d.cto_defeito_causa}`,`Tratativa realizada: ${d.cto_defeito_tratativa}`,materialText,`Analista CCR: ${d.analista_ccr}`]}}
+    {id:"cto_defeito",label:"CTO com Defeito",title:"CTO COM DEFEITO",fields:[{id:"cto_defeito_site",label:"Nome SITE/ARO",type:"datalist",listId:"siteList",listFrom:"sites",placeholder:"Digite para pesquisar ou selecione na lista",group:"two"},{id:"cto_defeito_splitter",label:"Splitter",type:"text",placeholder:"Ex: SP001, SP144",group:"two"},{id:"cto_defeito_caixa",label:"Caixa",type:"text",placeholder:"Ex: G0001, G0099, GP0050",group:"two"},{id:"cto_defeito_endereco",label:"Endereço",type:"text",placeholder:"Rua, Número, Complemento",group:"two"},{id:"cto_defeito_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},{id:"cto_defeito_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descreva a tratativa realizada",group:"full"},{id:"cto_defeito_material",label:"Materiais Utilizados",type:"materials",group:"full"}],
+
+stamp:(d)=>{
+  const materials = JSON.parse(d.cto_defeito_material || "[]");
+  const materialLines = materials.length > 0
+    ? ["Materiais utilizados:", ...materials.map(m => `  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`)]
+    : ["Nenhum material registrado"];
+
+  return [
+    "CTO COM DEFEITO", "",
+    `OS BA/TT: ${d.id_ocorrencia}`,
+    `Supervisor: ${d.supervisor}`,
+    `Telefone: ${d.supervisor_tel}`,
+    `Técnicos(s): ${d.tecnicos}`,
+    `Telefone: ${d.tecnico_tel}`,
+    `Nome SITE/ARO: ${d.cto_defeito_site}`,
+    `Splitter: ${d.cto_defeito_splitter}`,
+    `Caixa: ${d.cto_defeito_caixa}`,
+    `Endereço: ${d.cto_defeito_endereco}`,
+    `Causa: ${d.cto_defeito_causa}`,
+    `Tratativa realizada: ${d.cto_defeito_tratativa}`,
+    ...materialLines,
+    `Analista CCR: ${d.analista_ccr}`
+  ];
+}
+
+}
   ]
 };
 
-    
 // ✅ Ordenação alfabética (ignorando acentos)
 const sortPT = (a, b) => (a || "").localeCompare(b || "", "pt-BR", { sensitivity: "base" });
 
-// ✅ Ordena técnicos A-Z
-SCHEMA.lists.technicians = [...SCHEMA.lists.technicians].sort(sortPT);
-
+// ✅ Se existir diretório, usa ele como fonte principal para o datalist
+if (Array.isArray(SCHEMA.lists.techDirectory) && SCHEMA.lists.techDirectory.length) {
+  SCHEMA.lists.techDirectory = SCHEMA.lists.techDirectory.map(x => ({
+    name: (x.name || "").trim(),
+    phone: (x.phone || "").trim(),
+    matricula: (x.matricula || "").trim()
+  }));
+  SCHEMA.lists.technicians = [...new Set(SCHEMA.lists.techDirectory.map(x => x.name))].sort(sortPT);
+}
 
 const $ = (id) => document.getElementById(id);
 const normalizeName = (str) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 const supervisorPhones = Object.fromEntries(SCHEMA.lists.supervisors.map(s => [normalizeName(s.name), s.phone]));
 
+// ✅ índices rápidos do diretório
+const techByName = new Map((SCHEMA.lists.techDirectory || []).map(t => [normalizeName(t.name), t]));
+const techByMat  = new Map((SCHEMA.lists.techDirectory || []).map(t => [String(t.matricula || "").trim(), t]));
+
+function formatPhoneBR(raw) {
+  const digits = String(raw || "").replace(/\D/g, "");
+  if (digits.length === 11) return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+  if (digits.length === 10) return `(${digits.slice(0,2)}) ${digits.slice(2,6)}-${digits.slice(6)}`;
+  return raw || "";
+}
+
+function findTechRecord(key) {
+  const k = String(key || "").trim();
+  if (!k) return null;
+
+  const byName = techByName.get(normalizeName(k));
+  if (byName) return byName;
+
+  const byMat = techByMat.get(k);
+  if (byMat) return byMat;
+
+  const d = k.replace(/\D/g, "");
+  if (d.length >= 10) {
+    const rec = (SCHEMA.lists.techDirectory || []).find(t => (t.phone || "").replace(/\D/g, "") === d);
+    if (rec) return rec;
+  }
+
+  return null;
+}
+
+// ✅ Escape HTML correto (evita XSS e evita duplicar &)
 function escapeHtml(s) {
-  return String(s ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\\"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function linesToSafeHtml(lines) {
+  return (lines || [])
+    .map(line => escapeHtml(line).replace(/\n/g, "&lt;br&gt;"))
+    .join("&lt;br&gt;\n")
+    .trim();
 }
 
 function buildDatalist(id, values) {
   let dl = $(id);
   if (!dl) { dl = document.createElement("datalist"); dl.id = id; document.body.appendChild(dl); }
-  dl.innerHTML = values.map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
+  dl.innerHTML = (values || []).map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
 }
 
 function groupClass(group) { return group === "full" ? "form-group full" : group === "three" ? "form-group three-col" : "form-group"; }
@@ -302,42 +458,56 @@ function renderField(field) {
     buildDatalist(listId, values);
     return `<div><label for="${safeId}">${safeLabel}</label><input type="text" id="${safeId}" list="${escapeHtml(listId)}" ${ph} ${val} ${ro} /></div>`;
   }
+
+  // ✅ TAGS: substituído por tabela (CONTATO/MATRÍCULA/COLABORADOR)
   if (type === "tags") {
     const values = (SCHEMA.lists[listFrom] || []);
     buildDatalist(listId, values);
-    return `<div><label for="${safeId}_input">${safeLabel}</label><div class="tags-wrap" id="${safeId}_wrap"><div class="chips" id="${safeId}_chips"></div><div class="tags-row"><input type="text" id="${safeId}_input" list="${escapeHtml(listId)}" ${ph} /><button type="button" id="${safeId}_add" class="btn-copy btn-add">Adicionar</button></div></div><input type="hidden" id="${safeId}" value="" /></div>`;
+    return `
+      <div>
+        <label for="${safeId}_input">${safeLabel}</label>
+        <div class="tags-wrap" id="${safeId}_wrap">
+          <div class="tech-table" id="${safeId}_table"></div>
+          <div class="tags-row">
+            <input type="text" id="${safeId}_input" list="${escapeHtml(listId)}" ${ph} />
+            <button type="button" id="${safeId}_add" class="btn-copy btn-add">Adicionar</button>
+          </div>
+        </div>
+        <input type="hidden" id="${safeId}" value="" />
+      </div>
+    `;
   }
 
-if (type === "materials") {
-  const materialsData = [...(SCHEMA.lists.materials || [])].sort((a, b) =>
-    (a.name || "").localeCompare(b.name || "", "pt-BR", { sensitivity: "base" })
-  );
+  if (type === "materials") {
+    const materialsData = [...(SCHEMA.lists.materials || [])].sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "", "pt-BR", { sensitivity: "base" })
+    );
 
-  const listId = `${id}_datalist`;
+    const listId2 = `${id}_datalist`;
 
-  return `<div>
-    <label>${safeLabel}</label>
-    <div class="materials-wrap" id="${safeId}_wrap">
-      <div class="materials-list" id="${safeId}_list">
-        <p class="materials-empty">Nenhum material adicionado</p>
+    return `<div>
+      <label>${safeLabel}</label>
+      <div class="materials-wrap" id="${safeId}_wrap">
+        <div class="materials-list" id="${safeId}_list">
+          <p class="materials-empty">Nenhum material adicionado</p>
+        </div>
+
+        <div class="materials-add">
+          <input type="text" id="${safeId}_search" list="${listId2}"
+            placeholder="Digite para buscar material..." 
+            style="flex:1;min-width:200px;padding:8px;border:1px solid var(--border-2);border-radius:4px;font-size:12px">
+
+          <datalist id="${listId2}">
+            ${materialsData.map(m => `<option value="${escapeHtml(m.name)}"></option>`).join("")}
+          </datalist>
+
+          <input type="number" id="${safeId}_qty" placeholder="Qtd" min="0.1" step="0.1">
+          <button type="button" id="${safeId}_add_btn" class="btn-copy btn-add">Adicionar</button>
+        </div>
       </div>
-
-      <div class="materials-add">
-        <input type="text" id="${safeId}_search" list="${listId}"
-          placeholder="Digite para buscar material..." 
-          style="flex:1;min-width:200px;padding:8px;border:1px solid var(--border-2);border-radius:4px;font-size:12px">
-
-        <datalist id="${listId}">
-          ${materialsData.map(m => `<option value="${escapeHtml(m.name)}"></option>`).join("")}
-        </datalist>
-
-        <input type="number" id="${safeId}_qty" placeholder="Qtd" min="0.1" step="0.1">
-        <button type="button" id="${safeId}_add_btn" class="btn-copy btn-add">Adicionar</button>
-      </div>
-    </div>
-    <input type="hidden" id="${safeId}" value="[]" />
-  </div>`;
-}
+      <input type="hidden" id="${safeId}" value="[]" />
+    </div>`;
+  }
 
   const inputType = escapeHtml(type || "text");
   return `<div><label for="${safeId}">${safeLabel}</label><input type="${inputType}" id="${safeId}" ${ph} ${val} ${ro} ${im} ${st} /></div>`;
@@ -378,199 +548,12 @@ function collectData(typeDef) {
   return data;
 }
 
-function hideOutput() { $("output").classList.remove("active"); $("outputText").textContent = ""; $("successMessage").classList.remove("show"); }
+function hideOutput() { $("output").classList.remove("active"); $("outputText").innerHTML = ""; $("successMessage").classList.remove("show"); }
 
-function showOutput(text) { $("outputText").textContent = text; $("output").classList.add("active"); $("output").scrollIntoView({ behavior: "smooth" }); }
+function showOutput(html) { $("outputText").innerHTML = html; $("output").classList.add("active"); $("output").scrollIntoView({ behavior: "smooth" }); }
 
 function clearTypeFields(typeDef) {
   if (!typeDef) return;
   for (const f of typeDef.fields) {
     if (!!f.readonly) continue;
-    if (f.type === "radio") { const nm = f.name || f.id; document.querySelectorAll(`input[name="${CSS.escape(nm)}"]`).forEach(r => r.checked = false); continue; }
-    const el = $(f.id);
-    if (!el) continue;
-    if (f.type === "materials") { el.value = "[]"; el.__clearMaterials && el.__clearMaterials(); continue; }
-    if (f.type === "tags") { el.value = ""; el.__clearTags && el.__clearTags(); continue; }
-    if (el.tagName === "SELECT") el.selectedIndex = 0; else el.value = "";
-  }
-  hideOutput();
-}
 
-function renderDynamic(typeId) {
-  const root = $("dynamicRoot");
-  root.innerHTML = "";
-  if (!typeId) { root.innerHTML = `<div class="section"><div class="hint">Selecione um tipo de carimbo acima para ver os campos específicos.</div></div>`; hideOutput(); return; }
-  const typeDef = SCHEMA.types.find(t => t.id === typeId);
-  if (!typeDef) return;
-  root.innerHTML = `<div class="section"><div class="section-title">${escapeHtml(typeDef.title)}</div>${renderForm(typeDef.fields)}<div class="actions"><button class="btn-generate" id="btnGenerate" type="button">Gerar Carimbo</button><button class="btn-clear" id="btnClear" type="button">Limpar Formulário</button></div></div>`;
-  $("btnGenerate").addEventListener("click", () => { const data = collectData(typeDef); const text = typeDef.stamp(data).join("<br>\n").trim(); showOutput(text); });
-  $("btnClear").addEventListener("click", () => clearTypeFields(typeDef));
-  setTimeout(() => { for (const f of typeDef.fields) { if (f.type === "tags") initTagsField(f.id, { delimiter: " / " }); if (f.type === "materials") initMaterialsField(f.id); } }, 0);
-}
-
-function initTagsField(fieldId, { delimiter = " / " } = {}) {
-  const input = document.getElementById(`${fieldId}_input`), chips = document.getElementById(`${fieldId}_chips`), addBtn = document.getElementById(`${fieldId}_add`), hidden = document.getElementById(fieldId);
-  if (!input || !chips || !addBtn || !hidden) return;
-  const state = { items: [] };
-  const syncHidden = () => { hidden.value = state.items.join(delimiter); };
-  const render = () => { chips.innerHTML = ""; state.items.forEach((name, idx) => { const chip = document.createElement("span"); chip.className = "chip"; chip.textContent = name; const x = document.createElement("button"); x.type = "button"; x.textContent = "✕"; x.title = "Remover"; x.addEventListener("click", () => { state.items.splice(idx, 1); syncHidden(); render(); }); chip.appendChild(x); chips.appendChild(chip); }); };
-  const addValue = () => { const raw = (input.value || "").trim(); if (!raw) return; const exists = state.items.some(x => x.toLowerCase() === raw.toLowerCase()); if (exists) { input.value = ""; return; } state.items.push(raw); input.value = ""; syncHidden(); render(); };
-  addBtn.addEventListener("click", addValue);
-  input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addValue(); } if (e.key === "Backspace" && !input.value && state.items.length) { state.items.pop(); syncHidden(); render(); } });
-  hidden.__clearTags = () => { state.items = []; syncHidden(); render(); };
-  syncHidden(); render();
-}
-
-
-function initMaterialsField(fieldId) {
-  const searchInput = document.getElementById(`${fieldId}_search`);
-  const qty = document.getElementById(`${fieldId}_qty`);
-  const addBtn = document.getElementById(`${fieldId}_add_btn`);
-  const list = document.getElementById(`${fieldId}_list`);
-  const hidden = document.getElementById(fieldId);
-
-  if (!searchInput || !qty || !addBtn || !list || !hidden) return;
-
-  const state = { items: [] };
-
-  const syncHidden = () => { hidden.value = JSON.stringify(state.items); };
-
-  const render = () => {
-    list.innerHTML = "";
-
-    if (state.items.length === 0) {
-      list.innerHTML = `<p class="materials-empty">Nenhum material adicionado</p>`;
-      return;
-    }
-
-    const table = document.createElement("table");
-
-    // Cabeçalho (SEM coluna Código)
-    const header = table.insertRow();
-    ["Material", "Qtd", "Un", ""].forEach(text => {
-      const th = document.createElement("th");
-      th.textContent = text;
-      header.appendChild(th);
-    });
-
-    // Linhas
-    state.items.forEach((item, idx) => {
-      const row = table.insertRow();
-
-      const c1 = row.insertCell(); c1.textContent = item.name;
-      const c2 = row.insertCell(); c2.textContent = item.quantity;
-      const c3 = row.insertCell(); c3.textContent = item.unit;
-
-      const c4 = row.insertCell();
-      c4.style.textAlign = "center";
-
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = "✕";
-      btn.style.background = "transparent";
-      btn.style.border = "none";
-      btn.style.cursor = "pointer";
-      btn.style.color = "var(--accent)";
-      btn.style.fontWeight = "700";
-
-      btn.addEventListener("click", () => {
-        state.items.splice(idx, 1);
-        syncHidden();
-        render();
-      });
-
-      c4.appendChild(btn);
-    });
-
-    // ✅ FALTAVA ISTO no seu trecho
-    list.appendChild(table);
-  };
-
-  const addMaterial = () => {
-    const materialKey = searchInput.value.trim();
-    const quantity = parseFloat(qty.value);
-
-    if (!materialKey || !quantity || quantity <= 0) {
-      alert("Digite um material e informe a quantidade válida");
-      return;
-    }
-
-    // ✅ aceita buscar por NOME ou por CÓDIGO
-    const materialData =
-      SCHEMA.lists.materials.find(m => m.name === materialKey) ||
-      SCHEMA.lists.materials.find(m => m.code === materialKey);
-
-    if (!materialData) {
-      alert("Material não encontrado. Selecione da lista.");
-      return;
-    }
-
-    state.items.push({
-      name: materialData.name,
-      quantity: quantity,
-      unit: materialData.unit,
-      code: materialData.code // mantém para o STAMP
-    });
-
-    searchInput.value = "";
-    qty.value = "";
-    syncHidden();
-    render();
-    searchInput.focus();
-  };
-
-  addBtn.addEventListener("click", addMaterial);
-  qty.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addMaterial();
-    }
-  });
-
-  hidden.__clearMaterials = () => {
-    state.items = [];
-    syncHidden();
-    render();
-  };
-
-  syncHidden();
-  render();
-}
-
-
-async function copyToClipboard() {
-  const text = $("outputText").textContent || "";
-  if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
-  try { await navigator.clipboard.writeText(text); } catch {
-    const ta = document.createElement("textarea");
-    ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.left = "-9999px";
-    document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
-  }
-  $("successMessage").classList.add("show");
-  setTimeout(() => $("successMessage").classList.remove("show"), 3000);
-}
-
-function sendToWhatsApp() {
-  const text = $("outputText").textContent || "";
-  if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
-  window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
-}
-
-function initBase() {
-  buildDatalist("supervisorList", SCHEMA.lists.supervisors.map(s => s.name));
-  buildDatalist("analistaList", SCHEMA.lists.analysts);
-  buildDatalist("tecnicoList", SCHEMA.lists.technicians);
-  buildDatalist("siteList", SCHEMA.lists.sites);
-  $("baseForm").innerHTML = renderForm(SCHEMA.baseFields);
-  initTagsField("tecnicos", { delimiter: " / " });
-  $("carimbo_tipo").addEventListener("change", (e) => renderDynamic(e.target.value));
-  $("supervisor").addEventListener("input", function() { const tel = supervisorPhones[normalizeName(this.value)]; $("supervisor_tel").value = tel ?? ""; });
-  $("btnCopy").addEventListener("click", copyToClipboard);
-  $("btnWhats").addEventListener("click", sendToWhatsApp);
-  renderDynamic($("carimbo_tipo").value);
-}
-
-document.addEventListener("DOMContentLoaded", initBase);
-  </script>
-</body>
-</html>

@@ -545,7 +545,42 @@ const ADR_HIST_KEY = "adr_hist";
 function getAdrHistory() { try { return JSON.parse(localStorage.getItem(ADR_HIST_KEY) || "[]"); } catch { return []; } }
 function pushAdrHistory(addr) { const a=(addr||"").trim(); if(!a) return; const hist=getAdrHistory().filter(x=>x!==a); hist.unshift(a); localStorage.setItem(ADR_HIST_KEY, JSON.stringify(hist.slice(0,50))); }
 function buildAddressSuggestions(query){ const q=(query||"").trim().toLowerCase(); const hist=getAdrHistory(); const base=ADDRESS_DB.slice(); const starter = (!q ? PREFIXOS_VIA.map(p => p+" ") : []); const match=(arr)=>arr.filter(x=>x.toLowerCase().includes(q)); const final=[...starter, ...match(hist), ...match(base)].filter((v,i,self)=>self.indexOf(v)===i); if(q && !q.includes("porto alegre") && !/ - [A-Za-zÀ-ú\s]+$/.test(q)){ final.push((query||"").replace(/\s*$/, "") + " - Porto Alegre"); } return final.slice(0,20); }
-function attachAddressSuggest(inputId){ const input=document.getElementById(inputId); if(!input) return; const wrap=document.createElement("div"); wrap.className="suggest-box"; input.parentNode.insertBefore(wrap, input); wrap.appendChild(input); const tools=document.createElement("div"); tools.style.display="flex"; tools.style.justifyContent="space-between"; tools.style.gap="8px"; tools.style.marginTop="6px"; const btnMaps=document.createElement("button"); btnMaps.type="button"; btnMaps.className="btn-copy"; btnMaps.style.padding="6px 10px"; btnMaps.textContent="🔎 Buscar no mapa"; btnMaps.addEventListener("click", ()=>{ const q=input.value||""; if(!q.trim()) return alert("Digite um endereço para pesquisar no mapa."); window.open("https://www.google.com/maps/search/"+encodeURIComponent(q), "_blank"); }); tools.appendChild(btnMaps); wrap.appendChild(tools); const list=document.createElement("div"); list.className="suggest-list"; wrap.appendChild(list); let idx=-1; function renderList(items){ list.innerHTML=""; idx=-1; if(!items || !items.length){ const muted=document.createElement("div"); muted.className="suggest-muted"; muted.textContent="Sem sugestões"; list.appendChild(muted); list.classList.add("show"); return; } items.forEach((text)=>{ const item=document.createElement("div"); item.className="suggest-item"; item.textContent=text; item.addEventListener("click",()=>{ input.value=text; pushAdrHistory(text); list.classList.remove("show"); }); list.appendChild(item); }); list.classList.add("show"); } function update(){ renderList(buildAddressSuggestions(input.value)); } input.addEventListener("input", update); input.addEventListener("focus", update); input.addEventListener("keydown", (e)=>{ const items=Array.from(list.querySelectorAll(".suggest-item")); if(!items.length) return; if(e.key==="ArrowDown"){ e.preventDefault(); idx=(idx+1)%items.length; items.forEach(el=>el.style.background=""); items[idx].style.background="#f6faff"; items[idx].scrollIntoView({block:"nearest"}); } else if(e.key==="ArrowUp"){ e.preventDefault(); idx=(idx>0?idx-1:items.length-1); items.forEach(el=>el.style.background=""); items[idx].style.background="#f6faff"; items[idx].scrollIntoView({block:"nearest"}); } else if(e.key==="Enter"){ if(idx>=0 && idx<items.length){ e.preventDefault(); const val=items[idx].textContent; input.value=val; pushAdrHistory(val); list.classList.remove("show"); } else { pushAdrHistory(input.value); } } else if(e.key==="Escape"){ list.classList.remove("show"); } }); document.addEventListener("click", (ev)=>{ if(!wrap.contains(ev.target)) list.classList.remove("show"); }); }
+
+unction attachAddressSuggest(inputId){
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  // Mantém o "wrapper" para posicionar o botão abaixo do campo
+  const wrap = document.createElement("div");
+  wrap.className = "suggest-box";
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+
+  // Mantém somente o botão "Buscar no mapa"
+  const tools = document.createElement("div");
+  tools.style.display = "flex";
+  tools.style.justifyContent = "space-between";
+  tools.style.gap = "8px";
+  tools.style.marginTop = "6px";
+
+  const btnMaps = document.createElement("button");
+  btnMaps.type = "button";
+  btnMaps.className = "btn-copy";
+  btnMaps.style.padding = "6px 10px";
+  btnMaps.textContent = "🔎 Buscar no mapa";
+  btnMaps.addEventListener("click", () => {
+    const q = input.value || "";
+    if (!q.trim()) return alert("Digite um endereço para pesquisar no mapa.");
+    window.open("https://www.google.com/maps/search/" + encodeURIComponent(q), "_blank");
+  });
+
+  tools.appendChild(btnMaps);
+  wrap.appendChild(tools);
+
+  // ✅ Para aqui: remove autocomplete/histórico/lista
+  return;
+}
+
 function initAddressSuggestForType(typeDef){ if(!typeDef || !typeDef.fields) return; const addressFieldIds = typeDef.fields.filter(f => ["recuperacao_endereco", "cto_defeito_endereco"].includes(f.id)).map(f => f.id); setTimeout(()=>{ addressFieldIds.forEach(attachAddressSuggest); }, 0); }
 
 // ====== GEO Utils (uso exclusivo no carimbo Certificação) ======

@@ -5,14 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gerador de Carimbo - Acionamento GPON</title>
   <style>
-/* Autocomplete visível ao digitar (mobile-friendly) */
+/* Endereço: mantém só o wrapper para o botão "Buscar no mapa" (sem autocomplete) */
 .suggest-box{ position:relative; }
-.suggest-list{ position:absolute; top: calc(100% + 6px); left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.12); max-height:220px; overflow:auto; z-index:999; display:none; }
-.suggest-list.show{display:block;}
-.suggest-item{ padding:10px 12px; font-size:14px; cursor:pointer; border-bottom:1px solid #eee; }
-.suggest-item:last-child{border-bottom:none;}
-.suggest-item:hover{background:#f6faff;}
-.suggest-muted{color:var(--muted); font-size:12px; padding:10px 12px;}
 
 :root{--primary:#003366;--primary-2:#004d99;--accent:#ff6600;--info:#0066cc;--bg:#f5f5f5;--panel:#fafafa;--text:#333;--muted:#666;--border:#ddd;--border-2:#999;--radius:8px}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -490,7 +484,13 @@ function renderField(field) {
   }
 
   const inputType = escapeHtml(type || "text");
-  return `<div><label for="${safeId}">${safeLabel}</label><input type="${inputType}" id="${safeId}" ${ph} ${val} ${ro} ${im} ${st} /></div>`;
+  // ✅ Desativar autocomplete do navegador apenas nos 2 campos de endereço
+  const disableBrowserAutocomplete =
+    (id === "recuperacao_endereco" || id === "cto_defeito_endereco")
+      ? `autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"`
+      : "";
+
+  return `<div><label for="${safeId}">${safeLabel}</label><input type="${inputType}" id="${safeId}" ${ph} ${val} ${ro} ${im} ${st} ${disableBrowserAutocomplete} /></div>`;
 }
 
 function renderForm(fields) {
@@ -545,18 +545,17 @@ const ADR_HIST_KEY = "adr_hist";
 function getAdrHistory() { try { return JSON.parse(localStorage.getItem(ADR_HIST_KEY) || "[]"); } catch { return []; } }
 function pushAdrHistory(addr) { const a=(addr||"").trim(); if(!a) return; const hist=getAdrHistory().filter(x=>x!==a); hist.unshift(a); localStorage.setItem(ADR_HIST_KEY, JSON.stringify(hist.slice(0,50))); }
 function buildAddressSuggestions(query){ const q=(query||"").trim().toLowerCase(); const hist=getAdrHistory(); const base=ADDRESS_DB.slice(); const starter = (!q ? PREFIXOS_VIA.map(p => p+" ") : []); const match=(arr)=>arr.filter(x=>x.toLowerCase().includes(q)); const final=[...starter, ...match(hist), ...match(base)].filter((v,i,self)=>self.indexOf(v)===i); if(q && !q.includes("porto alegre") && !/ - [A-Za-zÀ-ú\s]+$/.test(q)){ final.push((query||"").replace(/\s*$/, "") + " - Porto Alegre"); } return final.slice(0,20); }
-
-unction attachAddressSuggest(inputId){
+function attachAddressSuggest(inputId){
   const input = document.getElementById(inputId);
   if (!input) return;
 
-  // Mantém o "wrapper" para posicionar o botão abaixo do campo
+  // Wrapper só para posicionar o botão abaixo do campo
   const wrap = document.createElement("div");
   wrap.className = "suggest-box";
   input.parentNode.insertBefore(wrap, input);
   wrap.appendChild(input);
 
-  // Mantém somente o botão "Buscar no mapa"
+  // Somente o botão "Buscar no mapa"
   const tools = document.createElement("div");
   tools.style.display = "flex";
   tools.style.justifyContent = "space-between";
@@ -577,10 +576,9 @@ unction attachAddressSuggest(inputId){
   tools.appendChild(btnMaps);
   wrap.appendChild(tools);
 
-  // ✅ Para aqui: remove autocomplete/histórico/lista
+  // ✅ Para aqui: sem lista, sem histórico, sem autocomplete
   return;
 }
-
 function initAddressSuggestForType(typeDef){ if(!typeDef || !typeDef.fields) return; const addressFieldIds = typeDef.fields.filter(f => ["recuperacao_endereco", "cto_defeito_endereco"].includes(f.id)).map(f => f.id); setTimeout(()=>{ addressFieldIds.forEach(attachAddressSuggest); }, 0); }
 
 // ====== GEO Utils (uso exclusivo no carimbo Certificação) ======

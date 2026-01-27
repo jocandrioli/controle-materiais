@@ -290,23 +290,39 @@ const SCHEMA = {
         ? ["Materiais utilizados:", ...materials.map(m => `  - ${m.name}: ${m.quantity} ${m.unit} (${m.code})`)]
         : ["Nenhum material registrado"];
 
-      const geoTxt = String(d.certificacao_geo || "indisponível");
-      const m = geoTxt.match(/(-?\d+\.\d+),\s*(-?\d+\.\d+)/);
-      
-      return [
-        "4 - SOLICITAÇÃO DE CERTIFICAÇÃO", "",
-        `ID Ocorrência: ${d.id_ocorrencia}`,
-        `Supervisor: ${d.supervisor}`,
-        `Telefone: ${d.supervisor_tel}`,
-        `Técnicos(s): ${d.tecnicos}`,
-        `Telefone: ${d.tecnico_tel}`,
-        `Tratativa realizada: ${d.certificacao_tratativa}`,
-        `Causa: ${d.certificacao_causa}`,
-        ...materialLines,
-        `Foto em anexo: ${d.certificacao_foto}`,
-        `Analista CCR: ${d.analista_ccr}`,
-        `Lat./Long.: ${geoTxt}`,
-      ];
+const geoTxt = String(d.certificacao_geo || "indisponível");
+
+// Divide em: "coords ±acc"  |  "data/hora"
+const parts = geoTxt.split("|").map(s => s.trim());
+const left = parts[0] || "";
+const timePart = parts[1] || "";
+
+// Extrai lat/long
+const coordMatch = left.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+const latLong = coordMatch ? `${coordMatch[1]}, ${coordMatch[2]}` : "indisponível";
+
+// Extrai acurácia (±Xm)
+const accMatch = left.match(/±\s*(\d+(?:\.\d+)?)\s*m/i);
+const accuracy = accMatch ? `±${accMatch[1]}m` : "indisponível";
+
+return [
+  "4 - SOLICITAÇÃO DE CERTIFICAÇÃO", "",
+  `ID Ocorrência: ${d.id_ocorrencia}`,
+  `Supervisor: ${d.supervisor}`,
+  `Telefone: ${d.supervisor_tel}`,
+  `Técnicos(s): ${d.tecnicos}`,
+  `Telefone: ${d.tecnico_tel}`,
+  `Tratativa realizada: ${d.certificacao_tratativa}`,
+  `Causa: ${d.certificacao_causa}`,
+  ...materialLines,
+  `Foto em anexo: ${d.certificacao_foto}`,
+  `Analista CCR: ${d.analista_ccr}`,
+
+  // ✅ Agora em campos separados
+  `Lat./Long.: ${latLong}`,
+  `Acurácia: ${accuracy}`,
+  `Data/Hora: ${timePart || "indisponível"}`
+];
     }
     },
     {id:"complementar",label:"Complementar",title:"COMPLEMENTAR",fields:[{id:"complementar_motivo",label:"Motivo",type:"text",placeholder:"Motivo da complementação",group:"two"},{id:"complementar_info",label:"Informação",type:"text",placeholder:"Informação adicional",group:"two"},{id:"nova_previsao",label:"Nova previsão?",type:"radio",name:"nova_previsao",options:["Sim","Não"],group:"two"},{id:"complementar_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["COMPLEMENTAR","",`ID Ocorrência: ${d.id_ocorrencia}`,`Motivo: ${d.complementar_motivo}`,`Informação: ${d.complementar_info}`,`Nova previsão? ${d.nova_previsao}`,`Previsão: ${d.complementar_previsao}`,`Analista CCR: ${d.analista_ccr}`]},

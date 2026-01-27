@@ -347,18 +347,17 @@ const SCHEMA = {
 
 // ====== MAPA DE CAMPOS OBRIGATÓRIOS (Observações REMOVIDAS) ======
 const REQUIRED = {
-  base: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr"],
-  acionamento: ["acionamento_prev_chegada","acionamento_site"],
-  deslocamento: ["deslocamento_km","deslocamento_prev_chegada"], // observações opcional
-  recuperacao: ["recuperacao_causa","recuperacao_prev_testes","recuperacao_endereco","recuperacao_cabo","recuperacao_tratativas"], // observações opcional
-  certificacao: ["certificacao_tratativa","certificacao_causa","certificacao_foto","certificacao_geo"], // geo exigido
-  complementar: ["complementar_motivo","complementar_info","nova_previsao","complementar_previsao"],
-  naofalha: ["naofalha_motivo","naofalha_foto","naofalha_gestor"],
+  acionamento: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr","acionamento_prev_chegada","acionamento_site"],
+  deslocamento: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr","deslocamento_km","deslocamento_prev_chegada"], // observações opcional
+  recuperacao: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr","recuperacao_causa","recuperacao_prev_testes","recuperacao_endereco","recuperacao_cabo","recuperacao_tratativas"], // observações opcional
+  certificacao: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr","certificacao_tratativa","certificacao_causa","certificacao_foto","certificacao_geo"], // geo exigido
+  complementar: ["id_ocorrencia","complementar_motivo","complementar_info","nova_previsao","complementar_previsao"],
+  naofalha: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr","naofalha_motivo","naofalha_foto","naofalha_gestor"],
   transbordo: ["transbordota","transbordocontrato","transbordooperadora"],
   prazo: ["prazoreparocargo","prazoreparonometel","prazoreparosla"], // observações opcional
   cire: ["cire_solicitante","cire_contato","cire_motivo","cire_info","cire_previsao"],
-  escalonamento: ["escalonamento_cargo","escalonamento_nome_tel","escalonamento_sla"], // observações opcional
-  cto_defeito: ["cto_defeito_site","cto_defeito_splitter","cto_defeito_caixa","cto_defeito_endereco","cto_defeito_causa","cto_defeito_tratativa"]
+  escalonamento: ["id_ocorrencia","escalonamento_cargo","escalonamento_nome_tel","escalonamento_sla"], // observações opcional
+  cto_defeito: ["id_ocorrencia","supervisor","supervisor_tel","tecnicos","tecnico_tel","analista_ccr","cto_defeito_site","cto_defeito_splitter","cto_defeito_caixa","cto_defeito_endereco","cto_defeito_causa","cto_defeito_tratativa"]
 };
 
 // ✅ Ordenação alfabética (ignorando acentos)

@@ -732,10 +732,9 @@ function initTechsTableField(fieldId, { delimiter = " / " } = {}) {
     if (state.items.length === 0) { tableWrap.innerHTML = `<div class="muted">Nenhum técnico adicionado</div>`; return; }
     const table = document.createElement("table");
     const header = table.insertRow();
-    ["CONTATO", "MATRÍCULA", "COLABORADOR", ""].forEach(t => { const th = document.createElement("th"); th.textContent = t; header.appendChild(th); });
+    ["MATRÍCULA", "COLABORADOR", ""].forEach(t => { const th = document.createElement("th"); th.textContent = t; header.appendChild(th); });
     state.items.forEach((it, idx) => {
       const row = table.insertRow();
-      row.insertCell().textContent = formatPhoneBR(it.phone || "");
       row.insertCell().textContent = it.matricula || "";
       row.insertCell().textContent = it.name || "";
       const actions = row.insertCell(); actions.style.textAlign = "center";

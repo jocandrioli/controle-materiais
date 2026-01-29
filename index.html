@@ -272,7 +272,7 @@ const SCHEMA = {
       {id:"certificacao_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descrição da tratativa realizada",group:"full"},
       {id:"certificacao_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},
       {id:"certificacao_material",label:"Materiais Utilizados",type:"materials",group:"full"},
-            {id:"certificacao_anexos",label:"Anexos (fotos/arquivos)",type:"file",accept:"image/*,application/pdf",multiple:true,capture:"environment",help:"Selecione fotos/arquivos. No celular, use a câmera se desejar.",group:"full"},
+            {id:"certificacao_anexos",label:"Anexos (fotos/arquivos)",type:"file",accept:"image/*,application/pdf",multiple:true,help:"Selecione fotos/arquivos. No celular, use a câmera se desejar.",group:"full"},
       {id:"certificacao_foto",label:"Foto em anexo",type:"radio",name:"certificacao_foto",options:["Sim","Não"],group:"full"}
     ],
     stamp:(d)=>{

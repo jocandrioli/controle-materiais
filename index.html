@@ -307,9 +307,7 @@ return [
   `Causa: ${d.certificacao_causa}`,
   ...materialLines,
   `Foto em anexo: ${d.certificacao_foto}`,
-      `Anexos selecionados: ${getFiles('certificacao_anexos').length ? getFiles('certificacao_anexos').map(f=>f.name).join(', ') : 'Nenhum'}` ,
   `Analista CCR: ${d.analista_ccr}`,
-
   // ✅ Agora em campos separados
   `Lat./Long.: ${latLong}`,
   `Acurácia: ${accuracy}`,

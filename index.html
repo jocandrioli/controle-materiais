@@ -152,7 +152,8 @@ const SCHEMA = {
       { phone:"51 99859-9693", matricula:"00176073", name:"Uilian D. S. Salgado" },
       { phone:"51 99743-3673", matricula:"00176312", name:"Anderson T. C. Costa" },
       { phone:"51 99528-9884", matricula:"00176299", name:"Gabriel A. Ziemer" },
-      { phone:"51 99514-2776", matricula:"00176261", name:"Maicon S. Amorim" },
+      /*{ phone:"51 99514-2776", matricula:"00176261", name:"Maicon S. Amorim" },*/
+      { phone:"51 99648-3321", matricula:"00176277", name:"Sergio C. S. M. Junior" },
       { phone:"51 99897-8292", matricula:"00176115", name:"Vinicius D. S. Camponogara" }
     ],
 
@@ -206,7 +207,7 @@ const SCHEMA = {
       {id:"mat_0043",name:"CARACTER ADESIVO 15MM ALGARISMOS 0-9",code:"9001-1358-8",unit:"plc"},
       {id:"mat_0044",name:"CARACTER ADESIVO 15MM ALFABETO A-N",code:"9001-1360-0",unit:"plc"},
       {id:"mat_0045",name:"CHAPA MEIO DE VAO",code:"0230-0232-5",unit:"un"},
-      {id:"mat_0046",name:"DROP OPTICO AS CM AR FIG8 LSZH - 4F",code:"0380-9221-1",unit:"m"},
+      {id:"mat_0046",name:"DROP OPTICO AS CM AR FIG8 LSZH 4F",code:"0380-9221-1",unit:"m"},
       {id:"mat_0047",name:"CABO DROP CIRCULAR 5 MM 12F",code:"0452-1257-7",unit:"m"},
       {id:"mat_0048",name:"MINI-CEO TERMOC 16ENT AEREO E SUBT 144FO",code:"0456-0170-0",unit:"un"},
       {id:"mat_0049",name:"CONJ EMENDA 48F 4ENT",code:"0456-0169-9",unit:"un"},
@@ -227,11 +228,6 @@ const SCHEMA = {
       {id:"mat_0064",name:"CDPS 4 SP1:4 CAIXA DERIV PRE-C SPLIT",code:"0460-0078-8",unit:"un"},
       {id:"mat_0065",name:"CDPS 2 SP1:4 CAIXA DERIV PRE-C SPLIT",code:"0460-0079-9",unit:"un"},
       {id:"mat_0066",name:"CONJ. SUP. CABOS OPT MEIO DE VAO RAQUETE",code:"0460-0084-4",unit:"un"},
-      {id:"mat_0067",name:"DROP 2PTAS FIG8 UNIV 100M PRET",code:"0380-9263-3",unit:"un"},
-      {id:"mat_0068",name:"DROP 2PTAS FIG8 UNIV 150M PRET",code:"0380-9264-4",unit:"un"},
-      {id:"mat_0069",name:"DROP 2PTAS FIG8 UNIV 200M PRET",code:"0380-9265-5",unit:"un"},
-      {id:"mat_0070",name:"DROP 2PTAS FIG8 UNIV 300M PRET",code:"0380-9266-6",unit:"un"},
-      {id:"mat_0071",name:"DROP 2PTAS FIG8 UNIV 400M PRET",code:"0380-9267-7",unit:"un"},
       {id:"mat_0072",name:"FITA PARA ROTULADORA ELETRONICA (PT80)",code:"0378-1565-0",unit:"rolo"},
       {id:"mat_0073",name:"ADAPTADOR REF UNIV DROP FIG8",code:"0380-9259-9",unit:"un"},
       {id:"mat_0074",name:"FIO DE ESPINAR ISOLADO PARA AGRUPADOR",code:"0380-9291-0",unit:"m"},
@@ -249,8 +245,8 @@ const SCHEMA = {
       {id:"mat_0086",name:"SPIRAL TUBE 1/2 LARANJA",code:"0254-0082-7",unit:"m"},
       {id:"mat_0087",name:"DUTO P PROTEÇÃO PARA CABOS EM REDE AEREA",code:"0430-0017-7",unit:"m"},
       {id:"mat_0088",name:"CABO DROP ALTA CAPACID. 24F S/MPO",code:"0452-1331-0",unit:"m"},
-      {id:"mat_0089",name:"CABO DROP ALTA CAPACID. 36 FIBRAS S/MPO",code:"0452-1332-0",unit:"m"},
-      {id:"mat_0090",name:"CABO DROP ALTA CAPACID. 144 FIBRAS S/MPO",code:"0452-1373-0",unit:"m"},
+      {id:"mat_0089",name:"CABO DROP ALTA CAPACID. 36F S/MPO",code:"0452-1332-0",unit:"m"},
+      {id:"mat_0090",name:"CABO DROP ALTA CAPACID. 144F S/MPO",code:"0452-1373-0",unit:"m"},
       {id:"mat_0091",name:"Protetor Ref p/ Conec Campo CDOE (NOVA)",code:"0458-0014-0",unit:"un"},
       {id:"mat_0092",name:"CABO DROP ALTA CAPACID. 72 FIBRAS S/MPO",code:"0452-1333-0",unit:"m"},
       {id:"mat_0093",name:"Protetor p/ Conec Reforçado de Campo",code:"0458-0015-0",unit:"un"},
@@ -263,9 +259,9 @@ const SCHEMA = {
     {id:"id_ocorrencia",label:"Ocorrência/Porta CTO (BA/TT)",type:"text",placeholder:"Ex: 123456",group:"two"},
     {id:"carimbo_tipo",label:"Selecione o Tipo de Carimbo",type:"select",optionsFrom:"types",group:"two"},
     {id:"supervisor",label:"Supervisor",type:"datalist",listId:"supervisorList",listFrom:"supervisors",placeholder:"Nome do Supervisor",group:"two"},
-    {id:"supervisor_tel",label:"Telefone Supervisor",type:"tel",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
+    {id:"supervisor_tel",label:"Telefone Supervisor",type:"hidden",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
     {id:"tecnicos",label:"Técnicos(s)",type:"tags",listId:"tecnicoList",listFrom:"technicians",placeholder:"Comece a digitar para pesquisar",group:"two"},
-    {id:"tecnico_tel",label:"Telefone Técnico",type:"tel",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
+    {id:"tecnico_tel",label:"Telefone Técnico",type:"hidden",placeholder:"(51) 9XXXX-XXXX",inputmode:"tel",group:"two"},
     {id:"analista_ccr",label:"Analista CCR",type:"datalist",listId:"analistaList",listFrom:"analysts",placeholder:"Digite para pesquisar ou selecione na lista",group:"full"}
   ],
   types: [
@@ -276,6 +272,7 @@ const SCHEMA = {
       {id:"certificacao_tratativa",label:"Tratativa realizada",type:"textarea",placeholder:"Descrição da tratativa realizada",group:"full"},
       {id:"certificacao_causa",label:"Causa",type:"select",optionsFrom:"causes",group:"two"},
       {id:"certificacao_material",label:"Materiais Utilizados",type:"materials",group:"full"},
+            {id:"certificacao_anexos",label:"Anexos (fotos/arquivos)",type:"file",accept:"image/*,application/pdf",multiple:true,capture:"environment",help:"Selecione fotos/arquivos. No celular, use a câmera se desejar.",group:"full"},
       {id:"certificacao_foto",label:"Foto em anexo",type:"radio",name:"certificacao_foto",options:["Sim","Não"],group:"full"}
     ],
     stamp:(d)=>{
@@ -310,6 +307,7 @@ return [
   `Causa: ${d.certificacao_causa}`,
   ...materialLines,
   `Foto em anexo: ${d.certificacao_foto}`,
+      `Anexos selecionados: ${getFiles('certificacao_anexos').length ? getFiles('certificacao_anexos').map(f=>f.name).join(', ') : 'Nenhum'}` ,
   `Analista CCR: ${d.analista_ccr}`,
 
   // ✅ Agora em campos separados
@@ -320,7 +318,7 @@ return [
     }
     },
     {id:"complementar",label:"Complementar",title:"COMPLEMENTAR",fields:[{id:"complementar_motivo",label:"Motivo",type:"text",placeholder:"Motivo da complementação",group:"two"},{id:"complementar_info",label:"Informação",type:"text",placeholder:"Informação adicional",group:"two"},{id:"nova_previsao",label:"Nova previsão?",type:"radio",name:"nova_previsao",options:["Sim","Não"],group:"two"},{id:"complementar_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["COMPLEMENTAR","",`ID Ocorrência: ${d.id_ocorrencia}`,`Motivo: ${d.complementar_motivo}`,`Informação: ${d.complementar_info}`,`Nova previsão? ${d.nova_previsao}`,`Previsão: ${d.complementar_previsao}`,`Analista CCR: ${d.analista_ccr}`]},
-    {id:"naofalha",label:"Não há Falha para Rede",title:"NÃO HÁ FALHA PARA REDE",fields:[{id:"naofalha_motivo",label:"Motivo da Improdutiva",type:"textarea",placeholder:"Descreva o motivo da improdutiva",group:"full"},{id:"naofalha_foto",label:"Foto em anexo",type:"radio",name:"naofalha_foto",options:["Sim","Não"],group:"two"},{id:"naofalha_gestor",label:"Ciente (Gestor VIVO Rede)",type:"text",value:"João Andrioli",readonly:true,group:"two"}],stamp:(d)=>["NÃO HÁ FALHA PARA REDE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Motivo da improdutiva: ${d.naofalha_motivo}`,`Foto em anexo: ${d.naofalha_foto}`,`Ciente (Gestor VIVO Rede): ${d.naofalha_gestor}`,`Analista CCR: ${d.analista_ccr}`]},
+    {id:"naofalha",label:"Não há Falha para Rede",title:"NÃO HÁ FALHA PARA REDE",fields:[{id:"naofalha_motivo",label:"Motivo da Improdutiva",type:"textarea",placeholder:"Descreva o motivo da improdutiva",group:"full"},{id:"naofalha_foto",label:"Foto em anexo",type:"radio",name:"naofalha_foto",options:["Sim","Não"],group:"two"},{id:"naofalha_gestor",label:"Ciente (Gestor VIVO Rede)",type:"text",value:"João Andrioli",readonly:true,group:"two"}],stamp:(d)=>["NÃO HÁ FALHA PARA REDE/ IMPROCEDÊNCIA","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Motivo da improdutiva: ${d.naofalha_motivo}`,`Foto em anexo: ${d.naofalha_foto}`,`Ciente (Gestor VIVO Rede): ${d.naofalha_gestor}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"transbordo",label:"Transbordo",title:"TRANSBORDO",fields:[{id:"transbordota",label:"TA",type:"text",placeholder:"TA",group:"two"},{id:"transbordocontrato",label:"CONTRATO",type:"text",placeholder:"Contrato",group:"two"},{id:"transbordooperadora",label:"TRANSBORDO",type:"text",value:"VIVO",readonly:true,group:"two"}],stamp:(d)=>["TRANSBORDO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`TA: ${d.transbordota}`,`CONTRATO: ${d.transbordocontrato}`,`TRANSBORDO: ${d.transbordooperadora}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"prazo",label:"Prazo de Reparo",title:"PRAZO DE REPARO",fields:[{id:"prazoreparocargo",label:"Cargo",type:"text",value:"Coordenador",readonly:true,group:"two"},{id:"prazoreparonometel",label:"Nome / Telefone",type:"text",value:"João Andrioli / 41 99244-9441",readonly:true,group:"two"},{id:"prazoreparosla",label:"SLA do evento",type:"text",placeholder:"Ex: 4h, 2h",group:"two"},{id:"prazoreparoobs",label:"Observações",type:"text",placeholder:"Observações",group:"two"}],stamp:(d)=>["ESCALONAMENTO PRAZO REPARO","",`ID Ocorrência: ${d.id_ocorrencia}`,`Supervisor: ${d.supervisor}`,`Telefone: ${d.supervisor_tel}`,`Técnicos(s): ${d.tecnicos}`,`Telefone: ${d.tecnico_tel}`,`Cargo: ${d.prazoreparocargo}`,`Nome/Tel.: ${d.prazoreparonometel}`,`SLA do evento: ${d.prazoreparosla}`,`Obs.: ${d.prazoreparoobs}`,`Analista CCR: ${d.analista_ccr}`]},
     {id:"cire",label:"CIRE",title:"INTERVENÇÃO CIRE",fields:[{id:"cire_solicitante",label:"Solicitante",type:"text",placeholder:"Nome do Solicitante",group:"two"},{id:"cire_contato",label:"Meio de contato",type:"radio",name:"cire_contato",options:["Telefone","E-mail","WhatsApp"],group:"two"},{id:"cire_motivo",label:"Motivo",type:"textarea",placeholder:"Descreva o motivo da intervenção CIRE",group:"full"},{id:"cire_info",label:"Informação",type:"textarea",placeholder:"Informações adicionais",group:"full"},{id:"cire_previsao",label:"Previsão",type:"time",group:"two"}],stamp:(d)=>["INTERVENÇÃO CIRE","",`ID Ocorrência: ${d.id_ocorrencia}`,`Solicitante: ${d.cire_solicitante}`,`Meio de contato: ${d.cire_contato}`,`Motivo: ${d.cire_motivo}`,`Informação: ${d.cire_info}`,`Previsão: ${d.cire_previsao}`,`Analista CCR: ${d.cire_analista || d.analista_ccr}`]},
@@ -385,6 +383,47 @@ if (Array.isArray(SCHEMA.lists.techDirectory) && SCHEMA.lists.techDirectory.leng
 
 const $ = (id) => document.getElementById(id);
 const normalizeName = (str) => (str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+
+// ====== STORE DE ARQUIVOS (anexos) ======
+const FILE_STORE = Object.create(null);
+function registerFileInput(fieldId){
+  const el = document.getElementById(fieldId);
+  if(!el) return;
+  el.addEventListener('change', ()=>{ FILE_STORE[fieldId] = Array.from(el.files || []); });
+}
+function getFiles(fieldId){ return Array.from(FILE_STORE[fieldId] || []); }
+
+// ====== ENFORCE: campos com lista devem ser escolhidos da lista ======
+function getAllowedListForField(field){
+  if(!field || field.type !== 'datalist') return [];
+  const src = field.listFrom;
+  if(!src) return [];
+  if(src === 'supervisors') return (SCHEMA.lists.supervisors || []).map(s=>s.name);
+  return (SCHEMA.lists[src] || []).slice();
+}
+function isValueInAllowed(value, allowed){
+  const v = normalizeName(value);
+  return allowed.some(a => normalizeName(a) === v);
+}
+function attachDatalistEnforcement(fields){
+  (fields || []).filter(f=>f.type==='datalist').forEach(f=>{
+    const el = document.getElementById(f.id);
+    if(!el) return;
+    const allowed = getAllowedListForField(f);
+    const check = ()=>{
+      const val = (el.value || '').trim();
+      if(!val) return;
+      if(allowed.length && !isValueInAllowed(val, allowed)){
+        alert(`Selecione um valor da lista para: ${f.label || f.id}`);
+        el.value = '';
+        if(f.id === 'supervisor'){ const st = document.getElementById('supervisor_tel'); if(st) st.value = ''; }
+      }
+    };
+    el.addEventListener('blur', check);
+    el.addEventListener('change', check);
+  });
+}
 const supervisorPhones = Object.fromEntries(SCHEMA.lists.supervisors.map(s => [normalizeName(s.name), s.phone]));
 
 function formatPhoneBR(raw) {
@@ -426,11 +465,24 @@ function buildDatalist(id, values) {
 function groupClass(group) { return group === "full" ? "form-group full" : group === "three" ? "form-group three-col" : "form-group"; }
 
 function renderField(field) {
-  const { id, label, type, placeholder, value, readonly, inputmode, step, listId, listFrom, options, optionsFrom, name } = field;
+  const { id, label, type, placeholder, value, readonly, inputmode, step, listId, listFrom, options, optionsFrom, name, accept, multiple, capture, help } = field;
   const safeLabel = escapeHtml(label || ""), safeId = escapeHtml(id || ""), ro = readonly ? "readonly" : "", im = inputmode ? `inputmode="${escapeHtml(inputmode)}"` : "", st = step ? `step="${escapeHtml(step)}"` : "", ph = placeholder ? `placeholder="${escapeHtml(placeholder)}"` : "", val = (value !== undefined && value !== null) ? `value="${escapeHtml(value)}"` : "";
 
   if (type === "textarea") return `<div><label for="${safeId}">${safeLabel}</label><textarea id="${safeId}" ${ph} ${ro}>${escapeHtml(value ?? "")}</textarea></div>`;
-  if (type === "select") {
+
+if (type === "hidden") {
+  // Campo invisível (usado para telefones auto-preenchidos)
+  return `<div style="display:none"><input type="hidden" id="${safeId}" ${val} /></div>`;
+}
+if (type === "file") {
+  const acc = accept ? `accept="${escapeHtml(accept)}"` : "";
+  const mult = multiple ? "multiple" : "";
+  const cap = capture ? `capture="${escapeHtml(capture)}"` : "";
+  const hint = help ? `<div class="mini" style="margin-top:4px">${escapeHtml(help)}</div>` : "";
+  return `<div><label for="${safeId}">${safeLabel}</label><input type="file" id="${safeId}" ${acc} ${mult} ${cap} /></div>${hint}`;
+}
+
+if (type === "select") {
     const opts = optionsFrom ? (optionsFrom === "types" ? SCHEMA.types.map(t => ({ value: t.id, text: t.label })) : (SCHEMA.lists[optionsFrom] || []).map(v => ({ value: v, text: v }))) : (options || []).map(v => ({ value: v, text: v }));
     const first = (id === "carimbo_tipo") ? `<option value="">-- Selecione --</option>` : `<option value="" disabled selected>Selecione</option>`;
     return `<div><label for="${safeId}">${safeLabel}</label><select id="${safeId}">${first}${opts.map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.text)}</option>`).join("")}</select></div>`;
@@ -608,7 +660,21 @@ function validateRequired(typeDef, data) {
     }
   }
 
-  return missing;
+  
+
+// Campos do tipo datalist: obrigar seleção da lista (sem digitação livre)
+const allFields = [...(SCHEMA.baseFields || []), ...(typeDef.fields || [])];
+allFields.filter(f=>f.type==='datalist').forEach(f=>{
+  const val = (data[f.id] || '').toString().trim();
+  if(!val) return;
+  const allowed = getAllowedListForField(f);
+  if(allowed.length && !isValueInAllowed(val, allowed)){
+    const lab = (f.label || f.id);
+    if(!missing.includes(lab)) missing.push(lab + ' (selecione da lista)');
+  }
+});
+
+return missing;
 }
 
 function renderDynamic(typeId) {
@@ -642,7 +708,11 @@ function renderDynamic(typeId) {
   $("btnClear").addEventListener("click", () => clearTypeFields(typeDef));
 
   setTimeout(() => {
-    for (const f of typeDef.fields) { if (f.type === "materials") initMaterialsField(f.id); }
+    for (const f of typeDef.fields) {
+      if (f.type === "materials") initMaterialsField(f.id);
+      if (f.type === "file") registerFileInput(f.id);
+    }
+    attachDatalistEnforcement(typeDef.fields);
     initAddressSuggestForType(typeDef);
   }, 0);
 }
@@ -748,7 +818,29 @@ async function copyToClipboard() {
 function sendToWhatsApp() {
   const text = $("outputText").innerText || "";
   if (!text.trim()) return alert("Nenhum carimbo gerado. Gere o carimbo primeiro.");
+
+  const typeId = $("carimbo_tipo")?.value || "";
+  const files = (typeId === "certificacao") ? getFiles("certificacao_anexos") : [];
+
+  // ✅ No celular, tenta compartilhar texto + anexos via Web Share (funciona com WhatsApp quando suportado)
+  if (files.length && navigator.share && navigator.canShare) {
+    try {
+      if (navigator.canShare({ files })) {
+        navigator.share({ title: "Carimbo", text, files }).catch(() => {
+          window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+        });
+        return;
+      }
+    } catch (e) {
+      // segue fallback
+    }
+  }
+
+  // Fallback (desktop/whatsapp web): somente texto
   window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+  if (files.length) {
+    setTimeout(() => alert("⚠️ Seu navegador/WhatsApp Web não permite anexar arquivos automaticamente. Anexe manualmente os arquivos selecionados."), 300);
+  }
 }
 
 function initBase() {
@@ -759,6 +851,7 @@ function initBase() {
   buildDatalist("siteList", SCHEMA.lists.sites);
 
   $("baseForm").innerHTML = renderForm(SCHEMA.baseFields);
+  attachDatalistEnforcement(SCHEMA.baseFields);
 
   initTechsTableField("tecnicos", { delimiter: " / " });
   $("carimbo_tipo").addEventListener("change", (e) => renderDynamic(e.target.value));
